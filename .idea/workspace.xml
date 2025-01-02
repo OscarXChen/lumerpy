@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b7c5dcbd-05d2-41e6-bd1e-57b444a83c31" name="Changes" comment="整理文件">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/Lumerpy.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/.idea/workspace.xml" beforeDir="false" />
-    </list>
+    <list default="true" id="b7c5dcbd-05d2-41e6-bd1e-57b444a83c31" name="Changes" comment="再次整理文件" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -109,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735822914998</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="再次整理文件">
+      <option name="closed" value="true" />
+      <created>1735824894481</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1735824894481</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -150,6 +149,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="把库名从lupy修改为lumerpy，pypi不允许使用lupy的名字" />
     <MESSAGE value="整理文件" />
-    <option name="LAST_COMMIT_MESSAGE" value="整理文件" />
+    <MESSAGE value="再次整理文件" />
+    <option name="LAST_COMMIT_MESSAGE" value="再次整理文件" />
   </component>
 </project>
