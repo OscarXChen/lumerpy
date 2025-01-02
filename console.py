@@ -7,7 +7,7 @@ api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
 file_path = ""
 file_name = ""
 sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
-import lupy
+import lumerpy as lupy
 # import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
 lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
 

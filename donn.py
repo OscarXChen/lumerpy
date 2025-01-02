@@ -4,7 +4,6 @@ import os
 import sys
 
 from .fdtd_manager import get_fdtd_instance
-import lupy
 
 u = 1e-6
 

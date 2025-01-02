@@ -42,16 +42,16 @@ def help():
 
 
 def hello():
-	print("\t欢迎使用LuPy库\n"
+	print("\t欢迎使用Lumerpy库\n"
 		  "\t这是一个为了方便调用而二次包装Lumerical Python API的库\n"
-		  "\t详情请参见Github页面：https://github.com/OscarXChen/lupy")
+		  "\t详情请参见Github页面：https://github.com/OscarXChen/lumerpy")
 
 
 def version():
 	FD = get_fdtd_instance()
 	lupy_version = "1.0"
 	version_date = "2025.01.01"
-	print(f"Lupy库版本：{lupy_version}\n"
+	print(f"Lumerpy库版本：{lupy_version}\n"
 		  f"Lumerical版本：{FD.version()}\n"
 		  f"发布时间：{version_date}")
 	return FD.version()  # 调用 FDTD 实例的 version() 方法

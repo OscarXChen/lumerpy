@@ -16,7 +16,7 @@ Github: [lumerpy](https://github.com/oscarxchen/lumerpy)
 
 License: [MIT](https://github.com/OscarXChen/lumerpy/master/LICENSE)
 
-More detailed information will be updated later. Current version of the README file: 1.0.
+More detailed information will be updated later. Current version of the README file: 1.1
 
 ------
 
@@ -26,7 +26,7 @@ More detailed information will be updated later. Current version of the README f
 
 1. 将Lumerical脚本语言风格二次包装为Python语言风格
 
-   `addpower;set("name","power");set("x",0);`→`addpower(name="name",x=0)`
+   `addpower;set("name","power monitor");set("x",0);`→`addpower(name="power monitor",x=0)`
 
 2. 提供了如活动实例管理 `get_fdtd_instance()` GPU加速 `GPU_on()` 等实用函数
 
@@ -38,5 +38,5 @@ Github 地址: [lumerpy](https://github.com/oscarxchen/lumerpy)
 
 License: [MIT](https://github.com/OscarXChen/lumerpy/master/LICENSE)
 
-更多的说明信息会在之后更新，README 文件当前版本：1.0
+更多的说明信息会在之后更新，README 文件当前版本：1.1
 
