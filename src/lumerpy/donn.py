@@ -79,7 +79,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	file_path = r"E:\0_Work_Documents\Simulation\12_ERI_LuPy".replace("\\", "/")
 	file_name = r"12.0_temp.fsp"
 	sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
-	import lupy
+	# import lupy
 
 	# import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
 	lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
@@ -209,7 +209,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	lupy.add_slab(x_min=fdtd_x_min, x_max=fdtd_x_max,
 				  y_min=fdtd_y_min - 0.1 * u, y_max=fdtd_y_max + 0.1 * u,
 				  z_min=0, z_max=height)
-	# add_basic_monitors()
+	add_basic_monitors()
 	y, y_span = lupy.tools.min_span(fdtd_y_min, fdtd_y_max)
 	eff_direction = ""
 	if source == "plane":

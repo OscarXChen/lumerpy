@@ -73,3 +73,29 @@ def cal_neff(L, Delta_phi):
 	k0 = 2 * pi / wavelength
 	neff = wavelength / 2 / pi / L * Delta_phi
 	return neff
+
+
+def analyze_list_deviation(data_list):
+	"""
+	接收一个列表，返回平均值和偏离程度最大的项。
+
+	Args:
+		data_list (list): 一个包含数值的列表。
+
+	Returns:
+		tuple: 平均值和偏离程度最大的项 (mean, max_deviation_item, max_deviation_percent)。
+	"""
+	if not data_list:
+		raise ValueError("列表不能为空！")
+
+	# 计算平均值
+	mean = sum(data_list) / len(data_list)
+
+	# 计算每项与平均值的偏离程度（百分比形式）
+	# deviations=[(项，偏离百分比),(项，偏离百分比),(项，偏离百分比)]
+	deviations = [(item, abs(item - mean) / mean * 100) for item in data_list]
+
+	# 找出偏离程度最大的项
+	max_deviation_item, max_deviation_percent = max(deviations, key=lambda x: x[1])
+
+	return mean, max_deviation_item, max_deviation_percent
