@@ -38,7 +38,7 @@ More detailed information will be updated later. Current version of the README f
 
 要使用本库，必须先安装有Lumerical并且获得Lumerical GUI License授权。默认的lumapi（官方提供的api）地址为：`C:\Program Files\Lumerical\v241\api\python`
 
-一个简单的示例是，你可以直接复制`consol.py`中的所有内容，并在python console中运行。
+一个简单的示例是，你可以直接复制`consol.py`中的所有内容，并在python console中运行
 
 Lumerical 官方 Python API 概览: [Lumerical](https://optics.ansys.com/hc/en-us/articles/360037824513-Python-API-overview)
 
