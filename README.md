@@ -14,7 +14,7 @@ The Lumerpy package has been released on PyPI, so you can easily install it usin
 
 To use this package, you must have Lumerical installed and obtain the Lumerical GUI License authorization. The default location of the lumapi (officially provided API) is: `C:\Program Files\Lumerical\v241\api\python`.
 
-For quick start, you can copy all the contents of `consol.py` and run them in the Python console.
+For a quick start, you can copy all the contents of `consol.py` and run them in the Python console.
 
 Official Lumerical Python API overview: [Lumerical](https://optics.ansys.com/hc/en-us/articles/360037824513-Python-API-overview)
 
