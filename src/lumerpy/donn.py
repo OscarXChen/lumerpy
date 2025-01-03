@@ -2,7 +2,7 @@
 # 本页面包含衍射网络建模用的一些函数
 import os
 import sys
-
+import lumerpy as lupy
 from .fdtd_manager import get_fdtd_instance
 
 u = 1e-6
