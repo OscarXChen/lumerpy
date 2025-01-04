@@ -74,7 +74,7 @@ def add_power_monitor(name="phase", x_min=0, x_max=0, y_min=0, y_max=0, z_min=0,
 
 
 def add_global_monitor(name="global",
-					   monitor_type="2D Z-normal"):
+					   monitor_type="2D Z-normal",dipole_avoid=False,delta_x=0.1*u):
 	# 添加全局监视器，看场俯视图
 	FD = get_fdtd_instance()
 	if FD.getnamednumber("FDTD"):
@@ -95,6 +95,16 @@ def add_global_monitor(name="global",
 	y_max = FD.getnamed("FDTD", "y max")
 	z_min = FD.getnamed("FDTD", "z min")
 	z_max = FD.getnamed("FDTD", "z max")
+
+	# dipole附近的场经常是非物理的，如果dipole_avoid非0，那么就往x正方向挪delta_x的距离，避免非物理波源的影响
+	if dipole_avoid:
+		if FD.getnamednumber("dipole"):
+			if monitor_type == "2D Z-normal":
+				x_min = FD.getnamed("dipole", "x")
+				x_min = x_min + delta_x
+		else:
+			print("本函数还没写完，没找到名为dipole的源，先这样吧")
+			return False
 
 	ob_power_monitor = None
 
