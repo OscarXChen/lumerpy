@@ -3,10 +3,11 @@ from .fdtd_manager import get_fdtd_instance
 u = 1e-6
 
 
-def add_source_dipole(x=0, y=0, z=0, wavelength_start=1.55 * u, wavelength_stop=1.55 * u, angle_phase=0, angle_theta=0,
+def add_source_dipole(name="dipole",x=0, y=0, z=0, wavelength_start=1.55 * u, wavelength_stop=1.55 * u, angle_phase=0, angle_theta=0,
 					  angle_phi=0, dipole_type="Electric dipole"):
 	FD = get_fdtd_instance()
 	ob_point = FD.adddipole()
+	FD.set("name", name)
 	FD.set("x", x)
 	FD.set("y", y)
 	FD.set("z", z)
@@ -19,7 +20,7 @@ def add_source_dipole(x=0, y=0, z=0, wavelength_start=1.55 * u, wavelength_stop=
 	return ob_point
 
 
-def add_source_gaussian(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, injection_axis="x", direction="forward",
+def add_source_gaussian(name="gaussian",x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, injection_axis="x", direction="forward",
 						polarization_angle=0, angle_theta=0, angle_phi=0, wavelength_start=1.55 * u,
 						wavelength_stop=1.55 * u, source_shape="Gaussian"):
 	FD = get_fdtd_instance()
@@ -49,7 +50,7 @@ def add_source_gaussian(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, in
 		FD.set("x max", x_max)
 		FD.set("y min", y_min)
 		FD.set("y max", y_max)
-
+	FD.set("name", name)
 	FD.set("direction", direction)
 	FD.set("wavelength start", wavelength_start)
 	FD.set("wavelength stop", wavelength_stop)
@@ -60,10 +61,10 @@ def add_source_gaussian(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, in
 	return ob_source_gasussian
 
 
-def add_source_plane(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, injection_axis="x", direction="forward",
+def add_source_plane(name="plane",x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, injection_axis="x", direction="forward",
 					 polarization_angle=0, angle_theta=0, angle_phi=0, wavelength_start=1.55 * u,
 					 wavelength_stop=1.55 * u, source_shape="Plane wave"):
-	ob_plane = add_source_gaussian(x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, z_min=z_min, z_max=z_max,
+	ob_plane = add_source_gaussian(name=name,x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, z_min=z_min, z_max=z_max,
 								   injection_axis=injection_axis, direction=direction,
 								   polarization_angle=polarization_angle, angle_theta=angle_theta, angle_phi=angle_phi,
 								   wavelength_start=wavelength_start, wavelength_stop=wavelength_stop,
@@ -71,7 +72,7 @@ def add_source_plane(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, injec
 	return ob_plane
 
 
-def add_source_mode(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, wavelength_start=1.55 * u,
+def add_source_mode(name="mode",x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, wavelength_start=1.55 * u,
 					wavelength_stop=1.55 * u, injection_axis="x", direction="forward"):
 	FD = get_fdtd_instance()
 	ob_source_mode_plane = FD.addmode()
@@ -100,7 +101,7 @@ def add_source_mode(x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, wavele
 		FD.set("x max", x_max)
 		FD.set("y min", y_min)
 		FD.set("y max", y_max)
-
+	FD.set("name", name)
 	FD.set("direction", direction)
 	FD.set("wavelength start", wavelength_start)
 	FD.set("wavelength stop", wavelength_stop)
