@@ -1,5 +1,5 @@
 import os
-import lumapi
+import lumapi		# 此处会报一个错，提示没有lumapi库，不用管它
 import time
 
 _fdtd_instance = None

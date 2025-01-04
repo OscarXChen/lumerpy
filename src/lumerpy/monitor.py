@@ -86,7 +86,7 @@ def add_global_monitor(name="global",
 	elif FD.getnamednumber("EME"):
 		sim_name = "EME"
 	else:
-		print("警告！未找到FDTD Solution或MODE Solution对应的仿真区域")
+		print("警告！未找到FDTD Solution或MODE Solution对应的仿真区域，无法创建全局监视器")
 		return 0
 	FD.select(sim_name)
 	x_min = FD.getnamed("FDTD", "x min")

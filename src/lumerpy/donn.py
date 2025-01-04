@@ -72,7 +72,7 @@ def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u
 # y减去width/2的原因是为了补偿前面循环中写的多加的width/2
 # y不减去period/2的原因是因为返回值如果也低了，后面的fdtd区域，slab范围整体也会低
 def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0, gaussian_delta_y=1 * u,
-						mesh_accuracy=2):
+						mesh_accuracy=2,dipole_avoid=False,delta_x=0.1*u):
 	length_ls = [length]
 	# 用户在这里设置 API 和文件路径
 	api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
@@ -164,8 +164,8 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	nslab = 2.84
 	metaline_ls = []
 
-	FD.switchtolayout()  # 例如调用 lumapi 自带的方法
-	FD.deleteall()
+	# FD.switchtolayout()  # 例如调用 lumapi 自带的方法
+	# FD.deleteall()
 	# slots_x_max, slots_y_max = add_slots()
 	slots_x_max, slots_y_max = lupy.add_metalines(width=width, height=height, period=period, distance=distance,
 												  layer_num=layer_num, group_num=group_num, length_ls=length_ls,
@@ -233,6 +233,8 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# print(rect_ls)
 
 	# input("输入回车保存并结束程序\n")
+	if dipole_avoid==True:
+		lupy.add_global_monitor(name="no_dipole", dipole_avoid=True,delta_x=delta_x)
 
 	add_eri_monitors()
 
