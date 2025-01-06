@@ -174,7 +174,9 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	fdtd_y_max = slots_y_max
 	fdtd_x_min = 0 - distance
 	# fdtd_x_max = slots_x_max+0.5*distance
-	fdtd_x_max = slots_x_max
+	# fdtd_x_max = slots_x_max
+	fdtd_x_max = 10*u
+
 	fdtd_z_min = -0.22 * u
 	fdtd_z_max = height + 0.22 * u
 	if source == "plane":
@@ -209,7 +211,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	lupy.add_slab(x_min=fdtd_x_min, x_max=fdtd_x_max,
 				  y_min=fdtd_y_min - 0.1 * u, y_max=fdtd_y_max + 0.1 * u,
 				  z_min=0, z_max=height)
-	add_basic_monitors()
+	# add_basic_monitors()
 	y, y_span = lupy.tools.min_span(fdtd_y_min, fdtd_y_max)
 	eff_direction = ""
 	if source == "plane":
