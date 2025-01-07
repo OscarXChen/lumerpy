@@ -237,7 +237,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# input("输入回车保存并结束程序\n")
 	if dipole_avoid == True:
 		lupy.add_global_monitor(name="no_dipole", dipole_avoid=True, delta_x=delta_x)
-
+	# lupy.add_global_monitor()
 	add_eri_monitors()
 
 	lupy.simulation.GPU_on()  # 尝试使用GPU加速
@@ -261,5 +261,5 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 				 f"src={source_x},\t"
 				 f"neff={mean_eff:.3f}")
 	# print(f"L={length_ls[0]:.2f}\t，neff={mean_eff:.3f}")
-
+	FD.save()
 	return mean_eff, eff_list
