@@ -72,7 +72,7 @@ def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u
 # y减去width/2的原因是为了补偿前面循环中写的多加的width/2
 # y不减去period/2的原因是因为返回值如果也低了，后面的fdtd区域，slab范围整体也会低
 def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0, gaussian_delta_y=1 * u,
-						mesh_accuracy=2,dipole_avoid=False,delta_x=0.1*u):
+						mesh_accuracy=2, dipole_avoid=False, delta_x=0.1 * u):
 	length_ls = [length]
 	# 用户在这里设置 API 和文件路径
 	api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
@@ -175,7 +175,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	fdtd_x_min = 0 - distance
 	# fdtd_x_max = slots_x_max+0.5*distance
 	# fdtd_x_max = slots_x_max
-	fdtd_x_max = 10*u
+	fdtd_x_max = 10 * u
 
 	fdtd_z_min = -0.22 * u
 	fdtd_z_max = height + 0.22 * u
@@ -224,8 +224,8 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 		lupy.add_source_dipole(x=source_x, y=y, z=height / 2)
 		eff_direction = "Ez"  # 默认的电场偏振方向
 	elif source == "gaussian":
-		y_min = (fdtd_y_min + fdtd_y_max) / 2 - gaussian_delta_y
-		y_max = (fdtd_y_min + fdtd_y_max) / 2 + gaussian_delta_y
+		y_min = (fdtd_y_min + fdtd_y_max) / 2 - gaussian_delta_y / 2
+		y_max = (fdtd_y_min + fdtd_y_max) / 2 + gaussian_delta_y / 2
 		lupy.add_source_gaussian(x_min=source_x, y_min=y_min, y_max=y_max, z_min=0 + 0.1 * u, z_max=height - 0.1 * u,
 								 injection_axis="x")
 		eff_direction = "Ey"  # 默认的电场偏振方向
@@ -235,8 +235,8 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# print(rect_ls)
 
 	# input("输入回车保存并结束程序\n")
-	if dipole_avoid==True:
-		lupy.add_global_monitor(name="no_dipole", dipole_avoid=True,delta_x=delta_x)
+	if dipole_avoid == True:
+		lupy.add_global_monitor(name="no_dipole", dipole_avoid=True, delta_x=delta_x)
 
 	add_eri_monitors()
 
