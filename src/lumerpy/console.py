@@ -4,8 +4,8 @@ import os
 
 # 用户在这里设置 API 和文件路径
 api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
-file_path = r""
-file_name = r""
+file_path = r"E:\0_Work_Documents\Simulation\lumerpy\00_temp"
+file_name = r"m00_temp.fsp"
 sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
 import lumerpy as lupy
 # import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi

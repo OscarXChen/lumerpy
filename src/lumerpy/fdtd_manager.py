@@ -1,5 +1,5 @@
 import os
-import lumapi		# 此处会报一个错，提示没有lumapi库，不用管它
+import lumapi  # 此处会报一个错，提示没有lumapi库，不用管它
 import time
 
 _fdtd_instance = None
@@ -58,3 +58,46 @@ def close_fdtd_instance():
 	if _fdtd_instance is not None:
 		_fdtd_instance.close()  # 不知道为什么此处弹了一个警告
 		_fdtd_instance = None
+
+
+def open_fdtd(solution_type="FDTD", hide=False):
+	"""为console模式提供一个快捷打开旧有仿真实例的函数，实例名发生变化"""
+	global _fdtd_instance
+	if solution_type == "FDTD":
+		if _fdtd_instance == None:
+			print("FDTD实例不存在，一个新的实例对象已创建")
+			if _api_path == None:
+				raise ValueError("错误！程序必须设置 API 路径！\n请先调用setup_paths()函数或检查API是否正确设置！")
+			if _file_path == "" or _file_name == "":
+				print("警告！未设置文件路径，程序结束时将不会保存文件！")
+				time.sleep(0.5)
+				_fdtd_instance = lumapi.FDTD(hide=False)  # 此时程序会打开一个新文件
+			else:
+				# 创建 FDTD 实例并传入 filename 和 hide 参数
+				filename = os.path.join(_file_path, _file_name)
+				_fdtd_instance = lumapi.FDTD(filename=filename, hide=hide)  # 此时程序会打开指定的文件
+		else:
+			print("打开当前已存在的FDTD实例，但是实例对象发生变化")
+			filename = os.path.join(_file_path, _file_name)
+			_fdtd_instance = lumapi.FDTD(filename=filename, hide=hide)  # 此时程序会打开指定的文件
+	elif solution_type == "MODE":
+		if _fdtd_instance is None:
+			print("MODE实例不存在，一个新的实例已创建")
+			if _api_path is None:
+				raise ValueError("错误！程序必须设置 API 路径！\n请先调用setup_paths()函数或检查API是否正确设置！")
+			if _file_path is None or _file_name is None:
+				print("警告！未设置文件路径，程序结束时将不会保存文件！")
+				time.sleep(0.5)
+				_fdtd_instance = lumapi.MODE(hide=False)  # 此时程序会打开一个新文件
+			else:
+				# 创建 FDTD 实例并传入 filename 和 hide 参数
+				filename = os.path.join(_file_path, _file_name)
+				_fdtd_instance = lumapi.MODE(filename=filename, hide=hide)  # 此时程序会打开指定的文件
+		else:
+			print("打开当前已存在的MODE实例，但是实例对象发生变化")
+			filename = os.path.join(_file_path, _file_name)
+			_fdtd_instance = lumapi.FDTD(filename=filename, hide=hide)  # 此时程序会打开指定的文件
+	else:
+		print("设置的solution_type必须为【FDTD】或【MODE】，请检查输入！")
+		time.sleep(3)
+	return _fdtd_instance

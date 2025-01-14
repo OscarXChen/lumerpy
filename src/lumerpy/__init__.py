@@ -13,6 +13,8 @@
 from .fdtd_manager import get_fdtd_instance
 from .fdtd_manager import setup_paths
 from .fdtd_manager import get_existing_fdtd_instance
+from .fdtd_manager import open_fdtd
+from .fdtd_manager import close_fdtd_instance
 
 from .rect import add_rect
 from .rect import add_slab
@@ -24,6 +26,7 @@ from .source import add_source_mode
 
 from .eri import set_neff_monitor
 from .eri import cal_eff_reg
+from .eri import cal_eff_delta
 
 from .monitor import add_power_monitor
 from .monitor import add_global_monitor

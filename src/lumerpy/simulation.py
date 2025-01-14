@@ -124,10 +124,10 @@ def GPU_on():
 			 ]
 	valid_bm = {"PML", "Metal", "Anti-Symmetric", "PMC", "Symmetric"}
 	if not all(item in valid_bm for item in bc_ls):  # 列表推导式，检查边界条件是否都在有效边界条件列表中，not取反
-		print("\t警告！GPU加速模式，边界条件仅支持下面的情形：\n"
+		print("\t警告！程序尝试使用GPU加速计算，但开启失败，程序已自动设置为CPU模式继续运行!\n"
+			  "\tGPU加速模式，边界条件仅支持下面的情形：\n"
 			  "\t「PML」「Metal」「Anti-Symmetric」「PMC」「Symmetric」\n"
-			  "\t不支持：「Periodic」或「Bloch」边界条件！\n"
-			  "\t程序已自动设置为CPU模式继续运行")
+			  "\t不支持：「Periodic」或「Bloch」边界条件！\n")
 		GPU_off()
 		return False
 	else:

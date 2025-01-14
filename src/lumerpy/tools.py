@@ -99,3 +99,18 @@ def analyze_list_deviation(data_list):
 	max_deviation_item, max_deviation_percent = max(deviations, key=lambda x: x[1])
 
 	return mean, max_deviation_item, max_deviation_percent
+
+
+def save_records(file_path=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-plane", file_name=r"temp.fsp",
+				 file_path_copy=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-plane\records"):
+	import os
+	import time
+	import shutil
+	formatted_time = time.strftime("%Y%m%d_%H-%M-%S", time.localtime())
+	saved_file = file_name.removesuffix(".fsp") + f"_{formatted_time}" + ".fsp"
+	# saved_file=file_name.removesuffix(".fsp")+f"k{k}"+".fsp"
+	saved_file_total = os.path.join(file_path_copy,
+									saved_file)
+	copy_file_total = os.path.join(file_path, file_name)
+	shutil.copy(copy_file_total, saved_file_total)
+	return True
