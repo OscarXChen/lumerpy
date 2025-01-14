@@ -72,7 +72,7 @@ def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u
 # y减去width/2的原因是为了补偿前面循环中写的多加的width/2
 # y不减去period/2的原因是因为返回值如果也低了，后面的fdtd区域，slab范围整体也会低
 def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0, gaussian_delta_y=1 * u,
-						mesh_accuracy=2, dipole_avoid=False, delta_x=0.1 * u):
+						mesh_accuracy=2, dipole_avoid=False, delta_x=0.1 * u,run_flag=True):
 	length_ls = [length]
 	# 用户在这里设置 API 和文件路径
 	api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
@@ -243,23 +243,26 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	lupy.simulation.GPU_on()  # 尝试使用GPU加速
 
 	FD.save()
-	FD.run()
-	# FD.close()
-	# FD.message("请打开python终端输入回车以继续程序\n")
-	# input("输入回车以继续程序\n")
+	if run_flag==True:
+		FD.run()
+		# FD.close()
+		# FD.message("请打开python终端输入回车以继续程序\n")
+		# input("输入回车以继续程序\n")
 
-	mean_eff = 0
-	eff_list = []
-	for i in range(group_num - 1):
-		eff = lupy.cal_eff_reg(f"eri0{i}", "x", eff_direction)
-		eff_list.append(eff)
-		mean_eff = mean_eff + eff
-	# print(f"eri0{i}计算的有效折射率为：{eff:.3f}")
-	mean_eff = mean_eff / (group_num - 1)
-	lupy.u_print(f"L={length_ls[0]:},\t"
-				 f"dis={distance:},\t"
-				 f"src={source_x},\t"
-				 f"neff={mean_eff:.3f}")
-	# print(f"L={length_ls[0]:.2f}\t，neff={mean_eff:.3f}")
-	FD.save()
-	return mean_eff, eff_list
+		mean_eff = 0
+		eff_list = []
+		for i in range(group_num - 1):
+			eff = lupy.cal_eff_reg(f"eri0{i}", "x", eff_direction)
+			eff_list.append(eff)
+			mean_eff = mean_eff + eff
+		# print(f"eri0{i}计算的有效折射率为：{eff:.3f}")
+		mean_eff = mean_eff / (group_num - 1)
+		lupy.u_print(f"L={length_ls[0]:},\t"
+					 f"dis={distance:},\t"
+					 f"src={source_x},\t"
+					 f"neff={mean_eff:.3f}")
+		# print(f"L={length_ls[0]:.2f}\t，neff={mean_eff:.3f}")
+		FD.save()
+		return mean_eff, eff_list
+	else:
+		return 0, []
