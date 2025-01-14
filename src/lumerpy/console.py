@@ -8,6 +8,7 @@ file_path = r"E:\0_Work_Documents\Simulation\lumerpy\00_temp"
 file_name = r"m00_temp.fsp"
 sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
 import lumerpy as lupy
+lupy.tools.check_path_and_file(file_path=file_path,file_name=file_name)
 # import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
 lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
 

@@ -1,3 +1,7 @@
+import os
+import shutil
+
+
 def u_print(*args, **kwargs):
 	'''
 	把1e-6变为μ，输出更美观
@@ -114,3 +118,45 @@ def save_records(file_path=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-pla
 	copy_file_total = os.path.join(file_path, file_name)
 	shutil.copy(copy_file_total, saved_file_total)
 	return True
+
+
+def check_path_and_file(file_path, file_name, template_file=None):
+	"""
+	检查路径和文件名是否存在。
+	如果路径不存在则创建路径，如果文件名不存在则复制模板文件到指定路径并重命名。
+
+	:param file_path: 文件路径 (字符串)
+	:param file_name: 文件名 (字符串)
+	:param template_file: 模板文件路径 (字符串，可选，默认与库代码同路径下的模板文件)
+	"""
+	# 获取库文件所在的目录
+	current_dir = os.path.dirname(os.path.abspath(__file__))
+	# print(current_dir)
+	if template_file is None:
+		template_file = os.path.join(current_dir, "temp.fsp")
+	else:
+		# 确保提供的模板路径也是基于当前库路径
+		if not os.path.isabs(template_file):
+			template_file = os.path.join(current_dir, template_file)
+
+	# 检查路径是否存在
+	if not os.path.exists(file_path):
+		print(f"路径 '{file_path}' 不存在，正在创建路径...")
+		os.makedirs(file_path)
+		print(f"路径 '{file_path}' 创建成功！")
+	# else:
+		# print(f"路径 '{file_path}' 已存在。")
+
+	# 检查文件是否存在
+	full_file_path = os.path.join(file_path, file_name)
+	if not os.path.isfile(full_file_path):
+		print(f"文件 '{full_file_path}' 不存在！")
+		if template_file and os.path.isfile(template_file):
+			shutil.copy(template_file, full_file_path)
+			print(f"已复制模板文件 '{template_file}' \n并更名到目录：'{full_file_path}'\n")
+		else:
+			print(f"未提供有效的模板文件，无法创建 '{file_name}'。")
+		return False
+	else:
+		# print(f"文件 '{full_file_path}' 已存在。")
+		return True
