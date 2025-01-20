@@ -72,18 +72,15 @@ def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u
 # y减去width/2的原因是为了补偿前面循环中写的多加的width/2
 # y不减去period/2的原因是因为返回值如果也低了，后面的fdtd区域，slab范围整体也会低
 def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0, gaussian_delta_y=1 * u,
-						mesh_accuracy=2, dipole_avoid=False, delta_x=0.1 * u,run_flag=True):
+						mesh_accuracy=2, dipole_avoid=False, delta_x=0.1 * u, run_flag=True, GPU=True):
 	length_ls = [length]
 	# 用户在这里设置 API 和文件路径
 	api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
 	file_path = r"E:\0_Work_Documents\Simulation\12_ERI_LuPy".replace("\\", "/")
 	file_name = r"12.0_temp.fsp"
 	sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
-	# import lupy
-
-	# import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
+	lupy.tools.check_path_and_file(file_path=file_path, file_name=file_name)
 	lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
-
 	# --------------------基本设置结束--------------------
 
 	fdtd_instance = lupy.get_fdtd_instance(hide=True, solution_type="FDTD")  # 创建fdtd实例，这应该是第一个实例，hide=True时，隐藏窗口
@@ -217,7 +214,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	if source == "plane":
 		y_min, y_max = lupy.tools.span_min(y, y_span * 10)
 		z_min, z_max = lupy.tools.span_min(height / 2, height * 10)
-		lupy.add_source_plane(x_min=0 - distance / 2, x_max=0 - distance / 2, y_min=y_min, y_max=y_max, z_min=z_min,
+		lupy.add_source_plane(x_min=source_x, x_max=source_x, y_min=y_min, y_max=y_max, z_min=z_min,
 							  z_max=z_max)
 		eff_direction = "Ey"  # 默认的电场偏振方向
 	elif source == "dipole":
@@ -240,19 +237,22 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# lupy.add_global_monitor()
 	add_eri_monitors()
 
-	lupy.simulation.GPU_on()  # 尝试使用GPU加速
-
+	if GPU==True:
+		lupy.simulation.GPU_on()  # 尝试使用GPU加速
+	else:
+		lupy.simulation.GPU_off()
 	FD.save()
-	if run_flag==True:
+	if run_flag == True:  # 运行仿真并计算结果
 		FD.run()
 		# FD.close()
 		# FD.message("请打开python终端输入回车以继续程序\n")
 		# input("输入回车以继续程序\n")
+		FD.save()
 
 		mean_eff = 0
 		eff_list = []
 		for i in range(group_num - 1):
-			eff = lupy.cal_eff_reg(f"eri0{i}", "x", eff_direction)
+			eff = lupy.cal_eff_delta(f"eri0{i}", "x", eff_direction)
 			eff_list.append(eff)
 			mean_eff = mean_eff + eff
 		# print(f"eri0{i}计算的有效折射率为：{eff:.3f}")
@@ -262,7 +262,35 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 					 f"src={source_x},\t"
 					 f"neff={mean_eff:.3f}")
 		# print(f"L={length_ls[0]:.2f}\t，neff={mean_eff:.3f}")
-		FD.save()
+
 		return mean_eff, eff_list
 	else:
 		return 0, []
+
+
+def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * u, source_x=0):
+	mean_eff = 0
+	eff_list = []
+	for i in range(group_num - 1):
+		eff = lupy.cal_eff_reg(f"eri0{i}", "x", eff_direction)
+		eff_list.append(eff)
+		mean_eff = mean_eff + eff
+	# print(f"eri0{i}计算的有效折射率为：{eff:.3f}")
+	mean_eff = mean_eff / (group_num - 1)
+
+
+	mean_eff_delta = 0
+	eff_list_delta = []
+	for i in range(group_num - 1):
+		eff = lupy.cal_eff_delta(f"eri0{i}", "x", eff_direction)
+		eff_list_delta.append(eff)
+		mean_eff_delta = mean_eff_delta + eff
+	# print(f"eri0{i}计算的有效折射率为：{eff:.3f}")
+	mean_eff_delta = mean_eff_delta / (group_num - 1)
+	lupy.u_print(f"L={length:},\t"
+				 f"dis={distance:},\t"
+				 f"src={source_x},\t"
+				 f"neff={mean_eff:.5f},\t"
+				 f"neff_delta={mean_eff_delta:.5f}")
+	return mean_eff, eff_list, mean_eff_delta, eff_list_delta
+

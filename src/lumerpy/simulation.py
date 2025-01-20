@@ -154,3 +154,19 @@ def GPU_off():
 	# FD.setresource("FDTD", 1, "GPU Device", "GPU 0")
 	FD.setnamed("FDTD", "express mode", 0)
 	return True
+
+
+def simulation_time_check():
+	FD = get_fdtd_instance()
+	FDTD_x_span = FD.getnamed("FDTD", "x max") - FD.getnamed("FDTD", "x min")
+	FDTD_y_span = FD.getnamed("FDTD", "y max") - FD.getnamed("FDTD", "y min")
+	FDTD_z_span = FD.getnamed("FDTD", "z max") - FD.getnamed("FDTD", "z min")
+	simulation_time = FD.getnamed("FDTD", "simulation time")
+	broadcast_distance = simulation_time / (1000 * 1e-15) * 100 * 1e-6  # 1000fs 对应的传播距离大约是88μm，取个整算100μm
+	if broadcast_distance < FDTD_x_span or broadcast_distance < FDTD_y_span or broadcast_distance < FDTD_z_span:
+		print("\t警告!仿真时间很可能小于光完全传播所需时间！")
+		if simulation_time == 1e-12:
+			print("\t仿真时长为默认的1000fs，请检查是否需要调节仿真时长！")
+		return False
+	else:
+		return True
