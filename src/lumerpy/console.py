@@ -1,4 +1,4 @@
-def console():
+def console(globals):
 	code='''
 # 本页用于直接复制到命令行终端窗口运行
 import sys
@@ -24,8 +24,10 @@ u = 1e-6
 
 # --------------------现在既可以调用lumapi，也可以调用lupy库--------------------
 '''
-	exec(code,globals())
+	# exec(code,globals())
+	exec(code,globals)
 
 if __name__=="__main__":
 	print("自动初始化")
-	console()
+	console(globals())
+	# console()

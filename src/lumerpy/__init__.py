@@ -39,7 +39,7 @@ from .donn import add_metalines
 
 from .tools import u_print
 
-
+from .console import console
 def help():
 	hello()
 
