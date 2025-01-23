@@ -1,5 +1,5 @@
 import os
-import lumapi  # 此处会报一个错，提示没有lumapi库，不用管它
+# import lumapi  # 此处会报一个错，提示没有lumapi库，不用管它
 import time
 
 _fdtd_instance = None
@@ -17,6 +17,7 @@ def setup_paths(api_path, file_path, file_name):
 
 
 def get_fdtd_instance(hide=False, solution_type="FDTD"):
+	import lumapi  # 此处会报一个错，提示没有lumapi库，不用管它
 	global _fdtd_instance
 	if solution_type == "FDTD":
 		if _fdtd_instance == None:
@@ -62,6 +63,7 @@ def close_fdtd_instance():
 
 def open_fdtd(solution_type="FDTD", hide=False):
 	"""为console模式提供一个快捷打开旧有仿真实例的函数，实例名发生变化"""
+	import lumapi  # 此处会报一个错，提示没有lumapi库，不用管它
 	global _fdtd_instance
 	if solution_type == "FDTD":
 		if _fdtd_instance == None:

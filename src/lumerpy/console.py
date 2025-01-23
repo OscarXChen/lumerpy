@@ -1,10 +1,12 @@
+def console():
+	code='''
 # 本页用于直接复制到命令行终端窗口运行
 import sys
 import os
 
 # 用户在这里设置 API 和文件路径
-api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
-file_path = r"E:\0_Work_Documents\Simulation\lumerpy\00_temp"
+api_path = r"C:/Program Files/Lumerical/v241/api/python"
+file_path = r"E:/0_Work_Documents/Simulation/lumerpy/00_temp"
 file_name = r"m00_temp.fsp"
 sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
 import lumerpy as lupy
@@ -21,3 +23,9 @@ if not FD:
 u = 1e-6
 
 # --------------------现在既可以调用lumapi，也可以调用lupy库--------------------
+'''
+	exec(code,globals())
+
+if __name__=="__main__":
+	print("自动初始化")
+	console()
