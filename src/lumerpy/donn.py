@@ -72,7 +72,8 @@ def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u
 # y减去width/2的原因是为了补偿前面循环中写的多加的width/2
 # y不减去period/2的原因是因为返回值如果也低了，后面的fdtd区域，slab范围整体也会低
 def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0, gaussian_delta_y=1 * u,
-						mesh_accuracy=2, dipole_avoid=False, delta_x=0.1 * u, run_flag=True, GPU=True):
+						mesh_accuracy=2, dipole_avoid=False, dipole_avoid_delta_x=0.5 * u, run_flag=True, GPU=True):
+	"""提供一个便于循环调用仿真的函数"""
 	length_ls = [length]
 	# 用户在这里设置 API 和文件路径
 	api_path = r"C:\Program Files\Lumerical\v241\api\python".replace("\\", "/")
@@ -233,11 +234,11 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 
 	# input("输入回车保存并结束程序\n")
 	if dipole_avoid == True:
-		lupy.add_global_monitor(name="no_dipole", dipole_avoid=True, delta_x=delta_x)
+		lupy.add_global_monitor(name="no_dipole", dipole_avoid=True, dipole_avoid_delta_x=dipole_avoid_delta_x)
 	# lupy.add_global_monitor()
 	add_eri_monitors()
 
-	if GPU==True:
+	if GPU == True:
 		lupy.simulation.GPU_on()  # 尝试使用GPU加速
 	else:
 		lupy.simulation.GPU_off()
@@ -278,7 +279,6 @@ def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * 
 	# print(f"eri0{i}计算的有效折射率为：{eff:.3f}")
 	mean_eff = mean_eff / (group_num - 1)
 
-
 	mean_eff_delta = 0
 	eff_list_delta = []
 	for i in range(group_num - 1):
@@ -293,4 +293,3 @@ def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * 
 				 f"neff={mean_eff:.5f},\t"
 				 f"neff_delta={mean_eff_delta:.5f}")
 	return mean_eff, eff_list, mean_eff_delta, eff_list_delta
-
