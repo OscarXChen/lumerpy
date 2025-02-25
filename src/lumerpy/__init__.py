@@ -61,7 +61,7 @@ def version():
 	return FD.version()  # 调用 FDTD 实例的 version() 方法
 
 def author():
-	print(f"原始作者：陈泽煊，发布于2025.01.01")
+	print(f"原始作者：陈泽煊，初始发布于2025.01.01")
 
 def miao():
 	print("阳猫宇飞喵~")
