@@ -160,3 +160,44 @@ def check_path_and_file(file_path, file_name, template_file=None):
 	else:
 		# print(f"文件 '{full_file_path}' 已存在。")
 		return True
+
+
+def get_single_inputs_center_x(
+		channels=2, data_single_scale=(1, 10), margins_cycle=(0.1, 0.1, 0.1, 0.1),
+		duty_cycle=0.6):
+	data_single_h, data_single_w = data_single_scale
+	top_rate, bottom_rate, left_rate, right_rate = margins_cycle
+
+	margin_T = int(data_single_h * top_rate)
+	margin_B = int(data_single_h * bottom_rate)
+	margin_L = int(data_single_w * left_rate)
+	margin_R = int(data_single_w * right_rate)
+
+	inner_h = data_single_h - margin_T - margin_B
+	inner_w = data_single_w - margin_L - margin_R
+
+	single_cycle_w = int(inner_w / channels)
+	remain_w = inner_w - single_cycle_w * channels
+
+	if remain_w % 2 == 0:
+		margin_L += remain_w // 2
+		margin_R += remain_w // 2
+	elif remain_w % 2 == 1:
+		margin_L += (remain_w - 1) // 2
+		margin_R += (remain_w - 1) // 2 + 1
+	else:
+		print("程序肯定有点问题")
+
+	single_inputs_w = int(single_cycle_w * duty_cycle)
+
+	centers = []
+	for i in range(channels):
+		start_x = margin_L + i * single_cycle_w
+		# 原来的中心 + 额外往左 0.5，得到像素视觉中心
+		center_x = start_x + single_inputs_w / 2.0 - 0.5
+		centers.append(center_x)
+
+	return centers
+
+
+

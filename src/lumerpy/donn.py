@@ -8,25 +8,29 @@ from .fdtd_manager import get_fdtd_instance
 u = 1e-6
 
 
-def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u, layer_num=1, group_num=3,
-				  length_ls=[1 * u], metaline_ls=[]):
+def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u,
+				  layer_num=1, group_num=3,layer_temp=0
+				  ):
+	metaline_ls = []
 	FD = get_fdtd_instance()
-	FD.addstructuregroup(name="metalines")
+	FD.addstructuregroup(name="metalines"+str(layer_temp))
 	FD.set("x", 0)
 	FD.set("y", 0)
 	FD.set("z", 0)
-	x = 0  # 从x=0开始放槽
-	y = 0  # 从y=0开始放槽
+	x = x_start  # 从x=0开始放槽
+	y = y_start  # 从y=0开始放槽
 	length_pin = 0  # 用于位移槽长列表的指针
 	name_series_slot = "metalines"
 	name_series_phase = "phase"
+	# layer_num = length_ls.shape[0]	# 为了兼容性，还是先手动指定层数吧
 	for j in range(layer_num):  # 放完一层放下一层
 		# 此处共有三种y的初始值设置方法：①y=0；②y=period / 2；③y=width/2
 		# ①并不好，会有边界问题，程序这里其实没写好y=0情况下的应对，不要用
 		# ②是较为美观且推荐的做法，会让槽组整体往上平移半个周期，美观一些
 		# ③是可行但不是那么推荐的做法，让槽组的边缘和仿真边缘贴合，可能出现边缘问题
 		y = period / 2  # period/2是整体往上提一点，对称好看一些，width/2是为了解决中心线一半在仿真区域外的问题
-		name_layer_slot = name_series_slot + f"{j}"
+		# name_layer_slot = name_series_slot + f"{j}"	# 这里注释掉，这是以前只有一层的写法
+		name_layer_slot = name_series_slot + str(layer_temp)
 		name_layer_phase = name_series_phase + f"{j}"
 		group_count = 0  # 用于辅助计数槽组是否放置完毕的中间变量
 		for i in range(int(group_num * len(length_ls) / layer_num)):  # 放完一个放下一个
@@ -61,7 +65,7 @@ def add_metalines(width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u
 			y = y + period  # 向y正方向放置下一个槽
 		x = x + distance  # 向x正方形放置下一个层
 	# return metaline_ls[-1]["x max"], y - period / 2  # 对应②
-	return x, y - period / 2  # 对应②
+	return x, y - period / 2, metaline_ls  # 对应②
 
 
 # return x, y	# 对应①
@@ -167,7 +171,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# slots_x_max, slots_y_max = add_slots()
 	slots_x_max, slots_y_max = lupy.add_metalines(width=width, height=height, period=period, distance=distance,
 												  layer_num=layer_num, group_num=group_num, length_ls=length_ls,
-												  metaline_ls=metaline_ls)
+												  )
 	fdtd_y_min = 0
 	fdtd_y_max = slots_y_max
 	fdtd_x_min = 0 - distance
@@ -294,12 +298,21 @@ def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * 
 				 f"neff_delta={mean_eff_delta:.5f}")
 	return mean_eff, eff_list, mean_eff_delta, eff_list_delta
 
+
+# def phase_to_length(phase_ls, n_eff, n_slab, wave_length=1.55e-6):
+# 	import math
+# 	phase_ls_negative = [x if x < 0 else x - 2 * math.pi for x in phase_ls]
+# 	k_0 = 2 * 3.1415927 / wave_length
+# 	length_ls = []
+# 	for phi in phase_ls_negative:
+# 		L = phi / k_0 / (n_eff - n_slab)
+# 		length_ls.append(L)
+# 	return length_ls
 def phase_to_length(phase_ls, n_eff, n_slab, wave_length=1.55e-6):
-	import math
-	phase_ls_negative = [x if x < 0 else x - 2 * math.pi for x in phase_ls]
-	k_0 = 2 * 3.1415927 / wave_length
-	length_ls = []
-	for phi in phase_ls_negative:
-		L = phi / k_0 / (n_eff - n_slab)
-		length_ls.append(L)
+	import numpy as np
+	phase_ls = np.array(phase_ls)  # 确保输入是 NumPy 数组
+	# 对每个元素做条件判断：若小于0则保留，否则减去2π
+	phase_ls_negative = np.where(phase_ls < 0, phase_ls, phase_ls - 2 * np.pi)
+	k_0 = 2 * np.pi / wave_length
+	length_ls = phase_ls_negative / k_0 / (n_eff - n_slab)
 	return length_ls
