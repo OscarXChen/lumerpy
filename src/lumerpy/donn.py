@@ -293,3 +293,13 @@ def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * 
 				 f"neff={mean_eff:.5f},\t"
 				 f"neff_delta={mean_eff_delta:.5f}")
 	return mean_eff, eff_list, mean_eff_delta, eff_list_delta
+
+def phase_to_length(phase_ls, n_eff, n_slab, wave_length=1.55e-6):
+	import math
+	phase_ls_negative = [x if x < 0 else x - 2 * math.pi for x in phase_ls]
+	k_0 = 2 * 3.1415927 / wave_length
+	length_ls = []
+	for phi in phase_ls_negative:
+		L = phi / k_0 / (n_eff - n_slab)
+		length_ls.append(L)
+	return length_ls
