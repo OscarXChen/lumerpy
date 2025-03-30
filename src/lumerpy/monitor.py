@@ -74,7 +74,7 @@ def add_power_monitor(name="phase", x_min=0, x_max=0, y_min=0, y_max=0, z_min=0,
 
 
 def add_global_monitor(name="global",
-					   monitor_type="2D Z-normal",dipole_avoid=False,dipole_avoid_delta_x=0.1*u):
+					   monitor_type="2D Z-normal", dipole_avoid=False, dipole_avoid_delta_x=0.1 * u):
 	# 添加全局监视器，看场俯视图
 	FD = get_fdtd_instance()
 	if FD.getnamednumber("FDTD"):
@@ -153,3 +153,61 @@ def add_power_monitor_metaline(monitor_name="", metaline_name=""):
 	ob_power_monitor = add_power_monitor(name=monitor_name, x_min=x_min, x_max=x_max, y_min=y, y_max=y, z_min=z,
 										 z_max=z, monitor_type="Linear X")
 	return ob_power_monitor
+
+
+def add_basic_monitors_X_prop(x_start=0, x_end=0, distance=0, fdtd_x_min=0, fdtd_x_max=0, fdtd_y_min=0, fdtd_y_max=0,
+							  fdtd_z_min=0, fdtd_z_max=0):
+	'''添加全局监视器，看场俯视图'''
+	FD = get_fdtd_instance()
+	ob_moni_glo = add_global_monitor()
+	# 添加前监视器，看场相位图
+	ob_moni_fro = FD.addpower()
+	FD.set("name", "front")
+	FD.set("monitor type", "2D X-normal")
+	FD.set("x", x_start)
+	FD.set("y min", fdtd_y_min)
+	FD.set("y max", fdtd_y_max)
+	FD.set("z min", fdtd_z_min)
+	FD.set("z max", fdtd_z_max)
+	# 添加后监视器，看场相位图
+	ob_moni_bac = FD.addpower()
+	FD.set("name", "back")
+	FD.set("monitor type", "2D X-normal")
+	FD.set("x", x_end)
+	FD.set("y min", fdtd_y_min)
+	FD.set("y max", fdtd_y_max)
+	FD.set("z min", fdtd_z_min)
+	FD.set("z max", fdtd_z_max)
+
+	ob_moni_loc = add_power_monitor(name="local", x_min=-10 * u, x_max=10 * u, y_min=fdtd_y_min, y_max=fdtd_y_max,
+									z_min=0.11 * u,
+									z_max=0.11 * u)
+	ob_moni_glo1 = add_power_monitor(name="global_without_source_1", x_min=-10 * u, x_max=fdtd_x_max, y_min=fdtd_y_min,
+									 y_max=fdtd_y_max, z_min=0.11 * u,
+									 z_max=0.11 * u)
+	ob_moni_glo2 = add_power_monitor(name="global_without_source_2", x_min=-distance - 10 * u, x_max=fdtd_x_max,
+									 y_min=fdtd_y_min,
+									 y_max=fdtd_y_max, z_min=0.11 * u,
+									 z_max=0.11 * u)
+	ob_moni_loc_outputs = add_power_monitor(name="local_outputs", x_min=fdtd_x_max - 0.1 * u,
+											x_max=fdtd_x_max - 0.1 * u,
+											y_min=fdtd_y_min,
+											y_max=fdtd_y_max, z_min=fdtd_z_min,
+											z_max=fdtd_z_max, monitor_type="2D X-normal")
+
+	return ob_moni_glo, ob_moni_fro, ob_moni_bac, ob_moni_loc, ob_moni_glo1, ob_moni_glo2, ob_moni_loc_outputs
+
+
+def add_eri_monitors(metaline_ls, layer_num):
+	# 这里有bug，先不改了
+	name_series_eri = "eri"
+	for j in range(layer_num):  # 放完一层放下一层
+		name_layer_eri = name_series_eri + f"{j}"
+		for i in range(len(metaline_ls)/layer_num - 1):
+			moni_x_min = metaline_ls[i]["x min"]
+			moni_x_max = metaline_ls[i]["x max"]
+			moni_y = (metaline_ls[i + 1]["y"] + metaline_ls[i]["y"]) / 2
+			moni_z = metaline_ls[i]["z"]
+			add_power_monitor(name=name_layer_eri + f"{i}", x_min=moni_x_min, x_max=moni_x_max, y_min=moni_y,
+								   y_max=moni_y,
+								   z_min=moni_z, z_max=moni_z, monitor_type="Linear X")

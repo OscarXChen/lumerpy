@@ -169,7 +169,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# FD.switchtolayout()  # 例如调用 lumapi 自带的方法
 	# FD.deleteall()
 	# slots_x_max, slots_y_max = add_slots()
-	slots_x_max, slots_y_max = lupy.add_metalines(width=width, height=height, period=period, distance=distance,
+	slots_x_max, slots_y_max,metaline_ls = lupy.add_metalines(width=width, height=height, period=period, distance=distance,
 												  layer_num=layer_num, group_num=group_num, length_ls=length_ls,
 												  )
 	fdtd_y_min = 0
