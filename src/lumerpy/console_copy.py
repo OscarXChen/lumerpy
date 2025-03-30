@@ -15,7 +15,7 @@ lupy.tools.check_path_and_file(file_path=file_path, file_name=file_name)
 lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
 
 # --------------------基本设置结束--------------------
-fdtd_instance = lupy.get_fdtd_instance(hide=True, solution_type="FDTD")  # 创建fdtd实例，这应该是第一个实例，hide=True时，隐藏窗口
+fdtd_instance = lupy.get_fdtd_instance(hide=False, solution_type="FDTD")  # 创建fdtd实例，这应该是第一个实例，hide=True时，隐藏窗口
 # lupy.version()  # 测试一下是否成功
 FD = lupy.get_existing_fdtd_instance()  # 返回创建的实例，以便使用lumapi
 if not FD:
@@ -27,7 +27,7 @@ import numpy as np
 
 lupy.plot_initialize()
 
-Edatas = FD.getresult("local_outputs", "E")
+# Edatas = FD.getresult("local_outputs", "E")
 z_fixed = 0.11e-6
 
 # out_y_span = out_y_pixel_scale * scale_ratio
@@ -36,15 +36,15 @@ z_fixed = 0.11e-6
 # 	out_y_start_ls.append(out_y_start_ls_temp[i] * scale_ratio + extra_gap_y)
 # 	print(f"输出位置[{i}]：{out_y_start_ls[i]},{out_y_start_ls[i] + out_y_span}")
 
-# 选择好输出范围即可
-selected_ranges = np.array([
-	[0e-6, 6e-6],
-	[12e-6, 18e-6]
-])
-
-idx, energy_list = lupy.get_simple_out(selected_range=selected_ranges, power_name="local_outputs", z_fixed=z_fixed)
-output_energy_ls = [round(float(x), 4) for x in energy_list]
-print(f"输出区域是：{idx}，并且各输出值为：{output_energy_ls}")
+# # 选择好输出范围即可
+# selected_ranges = np.array([
+# 	[0e-6, 6e-6],
+# 	[12e-6, 18e-6]
+# ])
+#
+# idx, energy_list = lupy.get_simple_out(selected_range=selected_ranges, power_name="local_outputs", z_fixed=z_fixed)
+# output_energy_ls = [round(float(x), 4) for x in energy_list]
+# print(f"输出区域是：{idx}，并且各输出值为：{output_energy_ls}")
 
 # E_list, coord_list, z_used, energy_list = lupy.select_E_component_by_range_from_dataset(
 # 	Edatas, axis_name='y', component='Ey', fixed_axis_name='z',
@@ -54,3 +54,9 @@ print(f"输出区域是：{idx}，并且各输出值为：{output_energy_ls}")
 # print("能量最大的区域是 Region", idx + 1)
 
 # input("输入回车结束")
+
+power_name="local_outputs"
+Edatas = FD.getresult(power_name, "E")
+E_list, coord_list, z_used, energy_list = lupy.select_E_component_by_range_from_dataset(
+	Edatas, axis_name="y", component="Ey",min_val=FD.getnamed("FDTD","y min"),max_val=FD.getnamed("FDTD","y max"),
+	plot=True, Energyshow=True, plot_energy=True)
