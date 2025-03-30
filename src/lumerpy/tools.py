@@ -202,6 +202,6 @@ def get_single_inputs_center_x(
 
 	return centers,starts,single_inputs_w
 
-print(get_single_inputs_center_x(channels=2,data_single_scale=(1,50),duty_cycle=0.5,margins_cycle=(0,0,0,0)))
+print(get_single_inputs_center_x(channels=2,data_single_scale=(1,25),duty_cycle=0.5,margins_cycle=(0,0,0,0)))
 
 

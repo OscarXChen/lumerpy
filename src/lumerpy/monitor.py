@@ -201,13 +201,15 @@ def add_basic_monitors_X_prop(x_start=0, x_end=0, distance=0, fdtd_x_min=0, fdtd
 def add_eri_monitors(metaline_ls, layer_num):
 	# 这里有bug，先不改了
 	name_series_eri = "eri"
+	print(len(metaline_ls))
+	metalin_layer_num=int(len(metaline_ls) / layer_num)
 	for j in range(layer_num):  # 放完一层放下一层
 		name_layer_eri = name_series_eri + f"{j}"
-		for i in range(len(metaline_ls)/layer_num - 1):
-			moni_x_min = metaline_ls[i]["x min"]
-			moni_x_max = metaline_ls[i]["x max"]
-			moni_y = (metaline_ls[i + 1]["y"] + metaline_ls[i]["y"]) / 2
-			moni_z = metaline_ls[i]["z"]
-			add_power_monitor(name=name_layer_eri + f"{i}", x_min=moni_x_min, x_max=moni_x_max, y_min=moni_y,
+		for i in range(metalin_layer_num - 1):
+			moni_x_min = metaline_ls[i+j*metalin_layer_num]["x min"]
+			moni_x_max = metaline_ls[i+j*metalin_layer_num]["x max"]
+			moni_y = (metaline_ls[i+j*metalin_layer_num + 1]["y"] + metaline_ls[i+j*metalin_layer_num]["y"]) / 2
+			moni_z = metaline_ls[i+j*metalin_layer_num]["z"]
+			add_power_monitor(name=name_layer_eri + f"{i+j*metalin_layer_num}", x_min=moni_x_min, x_max=moni_x_max, y_min=moni_y,
 								   y_max=moni_y,
 								   z_min=moni_z, z_max=moni_z, monitor_type="Linear X")
