@@ -23,18 +23,28 @@ if not FD:
 u = 1e-6
 
 # --------------------现在既可以调用lumapi，也可以调用lupy库--------------------
-
+import numpy as np
 
 lupy.plot_initialize()
 
 Edatas = FD.getresult("local_outputs", "E")
 z_fixed = 0.11e-6
-import numpy as np
 
-ranges = np.array([
-	[1e-6, 3e-6],
-	[10e-6, 15e-6]
+# out_y_span = out_y_pixel_scale * scale_ratio
+# for i in range(len(out_y_ls_temp)):
+# 	out_y_ls.append(out_y_ls_temp[i] * scale_ratio + extra_gap_y)
+# 	out_y_start_ls.append(out_y_start_ls_temp[i] * scale_ratio + extra_gap_y)
+# 	print(f"输出位置[{i}]：{out_y_start_ls[i]},{out_y_start_ls[i] + out_y_span}")
+
+# 选择好输出范围即可
+selected_ranges = np.array([
+	[0e-6, 6e-6],
+	[12e-6, 18e-6]
 ])
+
+idx, energy_list = lupy.get_simple_out(selected_range=selected_ranges, power_name="local_outputs", z_fixed=z_fixed)
+output_energy_ls = [round(float(x), 4) for x in energy_list]
+print(f"输出区域是：{idx}，并且各输出值为：{output_energy_ls}")
 
 # E_list, coord_list, z_used, energy_list = lupy.select_E_component_by_range_from_dataset(
 # 	Edatas, axis_name='y', component='Ey', fixed_axis_name='z',
@@ -43,7 +53,4 @@ ranges = np.array([
 # idx = int(np.argmax(energy_list))
 # print("能量最大的区域是 Region", idx + 1)
 
-idx,energy_list=lupy.get_simple_out(ranges)
-output_energy_ls = [round(float(x), 4) for x in energy_list]
-print(f"输出区域是：{idx}，并且各输出值为：{output_energy_ls}")
-input("输入回车结束")
+# input("输入回车结束")

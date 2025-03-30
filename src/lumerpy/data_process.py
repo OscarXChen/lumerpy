@@ -30,7 +30,7 @@ def select_E_component_by_range_from_dataset(
 		fixed_axis_value=None,
 		plot=False,
 		Energyshow=True,
-		selected_range=None,plot_energy=False
+		selected_range=None, plot_energy=False
 ):
 	axis_map = {'x': 0, 'y': 1, 'z': 2}
 	comp_map = {'Ex': 0, 'Ey': 1, 'Ez': 2}
@@ -96,6 +96,7 @@ def select_E_component_by_range_from_dataset(
 		n = len(region_list)
 		vmin = min([np.min(e) for e in E_all])
 		vmax = max([np.max(e) for e in E_all])
+		vmax=vmax*1.1
 		fig, axs = plt.subplots(1, n, figsize=(6 * n, 4))
 		if n == 1:
 			axs = [axs]
@@ -106,14 +107,14 @@ def select_E_component_by_range_from_dataset(
 			if e.ndim == 1:
 				ax.plot(coord_um, e)
 				ax.set_ylim(vmin, vmax)
-				ax.set_title(f"{component} in region {i + 1}")
+				ax.set_title(f"区域 {i} 的{component}")
 				ax.set_xlabel(f"{axis_name} (μm)")
 				ax.set_ylabel(component)
 				ax.grid(True)
 			elif e.ndim == 2:
 				extent = [coord_um[0], coord_um[-1], 0, e.shape[1]]
 				im = ax.imshow(e.T, aspect='auto', origin='lower', extent=extent, vmin=vmin, vmax=vmax)
-				ax.set_title(f"{component} in region {i + 1}")
+				ax.set_title(f"区域 {i} 的 {component}")
 				ax.set_xlabel(f"{axis_name} (μm)")
 				ax.set_ylabel("Other axis index")
 				plt.colorbar(im, ax=ax, label=component)
@@ -124,23 +125,30 @@ def select_E_component_by_range_from_dataset(
 	# 🎨 能量图 + 输出 + 能量标注
 	# -------------------------
 	if Energyshow:
+
+		# ✅ 获取所有 Ey² 的全局最小/最大值
+		all_Ey2 = [np.abs(e) ** 2 for e in E_all]
+		ymin = min(np.min(e) for e in all_Ey2)
+		ymax = max(np.max(e) for e in all_Ey2)
+		ymax=ymax*1.1
+
 		fig, axs = plt.subplots(1, len(E_all), figsize=(6 * len(E_all), 4))
 		if len(E_all) == 1:
 			axs = [axs]
-		for i, e in enumerate(E_all):
-			Ey2 = np.abs(e) ** 2
+
+		for i, Ey2 in enumerate(all_Ey2):
 			coord_um = coord_all[i] * 1e6
 			energy = energy_all[i]
 			ax = axs[i]
 
 			if Ey2.ndim == 1:
 				ax.plot(coord_um, Ey2)
-				ax.set_title(f"|{component}|² in region {i + 1}")
+				ax.set_ylim(ymin, ymax)  # ✅ 统一 y 轴范围
+				ax.set_title(f"区域 {i} 的 |{component}|²")
 				ax.set_xlabel(f"{axis_name} (μm)")
 				ax.set_ylabel(f"|{component}|²")
 				ax.grid(True)
-				# ✅ 添加能量标注
-				ax.text(0.98, 0.95, f"Energy = {energy:.2e}",
+				ax.text(0.98, 0.95, f"累计能量 = {energy:.2e}",
 						transform=ax.transAxes,
 						fontsize=10, color='red',
 						horizontalalignment='right',
@@ -148,13 +156,13 @@ def select_E_component_by_range_from_dataset(
 
 			elif Ey2.ndim == 2:
 				extent = [coord_um[0], coord_um[-1], 0, Ey2.shape[1]]
-				im = ax.imshow(Ey2.T, aspect='auto', origin='lower', extent=extent)
-				ax.set_title(f"|{component}|² in region {i + 1}")
+				im = ax.imshow(Ey2.T, aspect='auto', origin='lower', extent=extent,
+							   vmin=ymin, vmax=ymax)  # ✅ 统一色标范围
+				ax.set_title(f"区域 {i} 的 |{component}|²")
 				ax.set_xlabel(f"{axis_name} (μm)")
 				ax.set_ylabel("Other axis index")
 				plt.colorbar(im, ax=ax, label=f"|{component}|²")
-				# ✅ 添加能量标注
-				ax.text(0.98, 0.95, f"Energy = {energy:.2e}",
+				ax.text(0.98, 0.95, f"累计能量 = {energy:.2e}",
 						transform=ax.transAxes,
 						fontsize=10, color='red',
 						horizontalalignment='right',
@@ -165,23 +173,24 @@ def select_E_component_by_range_from_dataset(
 			plt.show()
 
 		for i, e in enumerate(energy_all):
-			print(f"区域 {i + 1} 累积 {component}² 能量为: {e:.4e}")
-
+			print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
 	return E_all, coord_all, fixed_coord_value, energy_all if Energyshow else None
 
-
-def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6):
+def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
+				   plot=False, Energyshow=True, plot_energy=False,
+				   axis_name='y', component='Ey', fixed_axis_name='z'):
 	FD = get_fdtd_instance()
 	Edatas = FD.getresult(power_name, "E")
 
 	E_list, coord_list, z_used, energy_list = select_E_component_by_range_from_dataset(
-		Edatas, axis_name='y', component='Ey', fixed_axis_name='z',
-		fixed_axis_value=z_fixed, selected_range=selected_range, plot=False, Energyshow=True)
+		Edatas, axis_name=axis_name, component=component, fixed_axis_name=fixed_axis_name,
+		fixed_axis_value=z_fixed, selected_range=selected_range,
+		plot=plot, Energyshow=Energyshow, plot_energy=plot_energy)
 
 	# print(energy_list)
 	idx = int(np.argmax(energy_list))
 
-	return idx,energy_list
+	return idx, energy_list
 # def cal_result(power_name):
 # 	FD = get_fdtd_instance()
 # 	Edatas = FD.getresult(power_name, "E")
