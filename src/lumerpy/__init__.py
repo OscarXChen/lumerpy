@@ -12,6 +12,7 @@
 
 from .fdtd_manager import get_fdtd_instance
 from .fdtd_manager import setup_paths
+from .fdtd_manager import setup_api_path
 from .fdtd_manager import get_existing_fdtd_instance
 from .fdtd_manager import open_fdtd
 from .fdtd_manager import close_fdtd_instance

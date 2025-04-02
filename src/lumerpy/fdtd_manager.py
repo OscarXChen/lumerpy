@@ -15,6 +15,11 @@ def setup_paths(api_path, file_path, file_name):
 	_file_path = file_path
 	_file_name = file_name
 
+def setup_api_path(api_path):
+	"""仅设置 API 路径"""
+	global _api_path
+	_api_path = api_path
+
 
 def get_fdtd_instance(hide=False, solution_type="FDTD"):
 	import lumapi  # 此处会报一个错，提示没有lumapi库，不用管它

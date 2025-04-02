@@ -34,7 +34,7 @@ def add_slab(name="", x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, mate
 		("z max", z_max),
 	])
 	ob_slab = FD.addrect(properties=props)
-	FD.set("material", "Si (Silicon) - Palik")  # 吐槽：addrect()函数居然没有材料属性
+	FD.set("material", material)  # 吐槽：addrect()函数居然没有材料属性
 	FD.set("override mesh order from material database", 1)
 	FD.set("mesh order", 3)
 	# FD.addtogroup("slab")

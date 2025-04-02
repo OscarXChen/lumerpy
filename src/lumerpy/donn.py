@@ -9,11 +9,11 @@ u = 1e-6
 
 
 def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u,
-				  layer_num=1, group_num=3,layer_temp=0
+				  layer_num=1, group_num=3, layer_temp=0
 				  ):
 	metaline_ls = []
 	FD = get_fdtd_instance()
-	FD.addstructuregroup(name="metalines"+str(layer_temp))
+	FD.addstructuregroup(name="metalines" + str(layer_temp))
 	FD.set("x", 0)
 	FD.set("y", 0)
 	FD.set("z", 0)
@@ -76,7 +76,8 @@ def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * 
 # y减去width/2的原因是为了补偿前面循环中写的多加的width/2
 # y不减去period/2的原因是因为返回值如果也低了，后面的fdtd区域，slab范围整体也会低
 def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0, gaussian_delta_y=1 * u,
-						mesh_accuracy=2, dipole_avoid=False, dipole_avoid_delta_x=0.5 * u, run_flag=True, GPU=True):
+						mesh_accuracy=2, dipole_avoid=False, dipole_avoid_delta_x=0.5 * u, run_flag=True, GPU=True,
+						group_num=3):
 	"""提供一个便于循环调用仿真的函数"""
 	length_ls = [length]
 	# 用户在这里设置 API 和文件路径
@@ -159,7 +160,7 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	source_x_min = -0.5 * u
 	# length_ls = [1.437 * u,0.862 * u ,0.287 * u]
 	# length_ls = [0.586 * u]
-	group_num = 5  # 单槽组的槽数
+	group_num = group_num  # 单槽组的槽数
 	layer_num = 1  # 衍射网络的层数
 	k0 = 2 * pi / wavelength
 	neff = 2.166
@@ -169,14 +170,16 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 	# FD.switchtolayout()  # 例如调用 lumapi 自带的方法
 	# FD.deleteall()
 	# slots_x_max, slots_y_max = add_slots()
-	slots_x_max, slots_y_max,metaline_ls = lupy.add_metalines(width=width, height=height, period=period, distance=distance,
-												  layer_num=layer_num, group_num=group_num, length_ls=length_ls,
-												  )
+	slots_x_max, slots_y_max, metaline_ls = lupy.add_metalines(width=width, height=height, period=period,
+															   distance=distance,
+															   layer_num=layer_num, group_num=group_num,
+															   length_ls=length_ls,
+															   )
 	fdtd_y_min = 0
 	fdtd_y_max = slots_y_max
-	fdtd_x_min = 0 - distance-1*u
+	fdtd_x_min = 0 - distance - 1 * u
 	# fdtd_x_max = slots_x_max+0.5*distance
-	fdtd_x_max = min(10 * u,slots_x_max)
+	fdtd_x_max = min(10 * u, slots_x_max)
 	# fdtd_x_max = 10 * u
 
 	fdtd_z_min = -0.22 * u
@@ -226,8 +229,10 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 		lupy.add_source_dipole(x=source_x, y=y, z=height / 2)
 		eff_direction = "Ez"  # 默认的电场偏振方向
 	elif source == "gaussian":
-		y_min = (fdtd_y_min + fdtd_y_max) / 2 - gaussian_delta_y / 2
-		y_max = (fdtd_y_min + fdtd_y_max) / 2 + gaussian_delta_y / 2
+		# y_min = (fdtd_y_min + fdtd_y_max) / 2 - gaussian_delta_y / 2
+		# y_max = (fdtd_y_min + fdtd_y_max) / 2 + gaussian_delta_y / 2
+		y_min = 1.5 * u - gaussian_delta_y / 2
+		y_max = 1.5 * u + gaussian_delta_y / 2
 		lupy.add_source_gaussian(x_min=source_x, y_min=y_min, y_max=y_max, z_min=0 + 0.1 * u, z_max=height - 0.1 * u,
 								 injection_axis="x")
 		eff_direction = "Ey"  # 默认的电场偏振方向

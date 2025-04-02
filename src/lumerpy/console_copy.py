@@ -4,9 +4,15 @@ import os
 
 # 用户在这里设置 API 和文件路径
 api_path = r"C:/Program Files/Lumerical/v241/api/python"
-file_path = r"E:\0_Work_Documents\Simulation\lumerpy\03_cat"
+# file_path = r"E:\0_Work_Documents\Simulation\lumerpy\03_cat"
+file_path = r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-plane"
 # file_name = r"m01_wg.fsp"
-file_name = r"m00_temp.fsp"
+file_name = r"m1.10_gaussian.fsp"
+# file_name = r"m00_temp.fsp"
+
+
+file_path=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-plane\records"
+file_name=r"m1.4_gaussian_20250114_16-51-26.fsp"
 sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
 import lumerpy as lupy
 
@@ -25,10 +31,17 @@ u = 1e-6
 # --------------------现在既可以调用lumapi，也可以调用lupy库--------------------
 import numpy as np
 
+input("输入回车继续")
 lupy.plot_initialize()
+lupy.cal_eff_delta("eri00")
+lupy.cal_eff_delta("eri01")
+lupy.cal_eff_delta("eri02")
+lupy.cal_eff_delta("eri03")
+
+# input("输入回车结束")
 
 # Edatas = FD.getresult("local_outputs", "E")
-z_fixed = 0.11e-6
+# z_fixed = 0.11e-6
 
 # out_y_span = out_y_pixel_scale * scale_ratio
 # for i in range(len(out_y_ls_temp)):
@@ -55,8 +68,8 @@ z_fixed = 0.11e-6
 
 # input("输入回车结束")
 
-power_name="local_outputs"
-Edatas = FD.getresult(power_name, "E")
-E_list, coord_list, z_used, energy_list = lupy.select_E_component_by_range_from_dataset(
-	Edatas, axis_name="y", component="Ey",min_val=FD.getnamed("FDTD","y min"),max_val=FD.getnamed("FDTD","y max"),
-	plot=True, Energyshow=True, plot_energy=True)
+# power_name="local_outputs"
+# Edatas = FD.getresult(power_name, "E")
+# E_list, coord_list, z_used, energy_list = lupy.select_E_component_by_range_from_dataset(
+# 	Edatas, axis_name="y", component="Ey",min_val=FD.getnamed("FDTD","y min"),max_val=FD.getnamed("FDTD","y max"),
+# 	plot=True, Energyshow=True, plot_energy=True)
