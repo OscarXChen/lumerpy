@@ -174,10 +174,10 @@ def loop_waveguide_neff(length=1 * u, distance=3 * u, source="plane", source_x=0
 												  )
 	fdtd_y_min = 0
 	fdtd_y_max = slots_y_max
-	fdtd_x_min = 0 - distance
+	fdtd_x_min = 0 - distance-1*u
 	# fdtd_x_max = slots_x_max+0.5*distance
-	# fdtd_x_max = slots_x_max
-	fdtd_x_max = 10 * u
+	fdtd_x_max = min(10 * u,slots_x_max)
+	# fdtd_x_max = 10 * u
 
 	fdtd_z_min = -0.22 * u
 	fdtd_z_max = height + 0.22 * u
@@ -293,7 +293,7 @@ def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * 
 	mean_eff_delta = mean_eff_delta / (group_num - 1)
 	lupy.u_print(f"L={length:},\t"
 				 f"dis={distance:},\t"
-				 f"src={source_x},\t"
+				 # f"src={source_x},\t"
 				 f"neff={mean_eff:.5f},\t"
 				 f"neff_delta={mean_eff_delta:.5f}")
 	return mean_eff, eff_list, mean_eff_delta, eff_list_delta
