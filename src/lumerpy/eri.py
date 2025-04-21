@@ -1,6 +1,7 @@
 # eri=Effective refractive index
 from .fdtd_manager import get_fdtd_instance
 import numpy as np
+import math
 
 
 def set_neff_monitor(pre_name="", direction="x", x1_min=0, x1_max=0, y1_min=0, y1_max=0, z1_min=0, z1_max=0, x2_min=0,
@@ -111,6 +112,19 @@ def cal_eff_delta(eri_monitor="eri00", axis="x", direction="Ey", wavelength=1.55
 		phase.append(np.angle(i))
 	phase = np.array(phase)
 	phase = np.unwrap(phase)
-	slope=(phase[-1]-phase[0])/(x_end-x_start)
-	eff = slope * wavelength / 2 / 3.1415927  # 计算有效折射率
+	slope = (phase[-1] - phase[0]) / (x_end - x_start)
+	eff = slope * wavelength / 2 / math.pi  # 计算有效折射率
+	print(f"x:\t{x_start}-{x_end}\nphase:\t{phase[0]}\t{phase[1]}\t{phase[2]}\t-\t{phase[-3]}\t{phase[-2]}\t{phase[-1]}")
+	print(f"delta_phase:\t{phase[-1] - phase[0]}\t{(phase[-1]+phase[-2]+phase[-3] - phase[0]-phase[1]-phase[2])/3}")
 	return eff
+
+
+def get_delta_phase_from_eff(eff, eri_length=None, eri_monitor="eri00", axis="x", wavelength=1.55e-6):
+	FD = get_fdtd_instance()
+	if not eri_length:
+		x = FD.getresult(eri_monitor, axis).ravel()  # 获得x轴长度
+		x_start = x[0]
+		x_end = x[-1]
+		eri_length = x_end - x_start
+	delta_phase = eff / wavelength * 2 * math.pi * (eri_length)
+	return delta_phase
