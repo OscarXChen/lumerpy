@@ -4,6 +4,7 @@ import os
 import sys
 import lumerpy as lupy
 from .fdtd_manager import get_fdtd_instance
+import numpy as np
 
 u = 1e-6
 
@@ -321,3 +322,58 @@ def phase_to_length(phase_ls, n_eff, n_slab, wave_length=1.55e-6):
 	k_0 = 2 * np.pi / wave_length
 	length_ls = phase_ls_negative / k_0 / (n_eff - n_slab)
 	return length_ls
+
+
+def phase_to_length_database(db_file: str, targets_file: str, k: int = 2):
+	"""
+	对每个目标相移 (phase)，在数据库中找距离最近的两条记录，
+	用它们做线性插值，返回插值后的长度 (length)。
+
+	Parameters
+	----------
+	db_file : str
+		两列 CSV：第 1 列=相移 (phase)，第 2 列=长度 (length)
+	targets_file : str
+		单行或单列 CSV，包含若干目标相移
+	k : int, optional
+		为兼容旧接口保留，但必须等于 2；否则抛 ValueError
+
+	Returns
+	-------
+	list[float]
+		与目标相移一一对应的插值长度
+	"""
+	if k != 2:
+		raise ValueError("线性插值版本要求 k 必须为 2")
+
+	# ---------- 读取数据库 ----------
+	db = np.loadtxt(db_file, delimiter=',')
+	phases_db = db[:, 1]  # 相移列
+	lengths_db = db[:, 0]  # 长度列
+
+	# ---------- 读取并预处理目标相移 ----------
+	targets = np.loadtxt(targets_file, delimiter=',').ravel()
+	targets = np.where(targets > 0, targets - 2 * np.pi, targets)
+
+	# ---------- 逐个目标做线性插值 ----------
+	results = []
+	for tgt in targets:
+		# 取距离最近的两条记录
+		idx = np.argsort(np.abs(phases_db - tgt))[:2]
+		x1, x2 = phases_db[idx]
+		y1, y2 = lengths_db[idx]
+
+		# 若两点相移不同，按 y = m x + b 插值
+		if x1 != x2:
+			m = (y2 - y1) / (x2 - x1)  # 斜率
+			b = y1 - m * x1  # 截距
+			y_pred = m * tgt + b
+		else:
+			# 极端情况：两点重合，直接取平均长度
+			y_pred = (y1 + y2) / 2.0
+
+		results.append(y_pred)
+
+	# print(results)  # 题目要求“以列表形式打印输出”
+	results_np = np.array(results)*1e-6
+	return results_np

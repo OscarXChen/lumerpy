@@ -22,7 +22,7 @@ def add_source_dipole(name="dipole",x=0, y=0, z=0, wavelength_start=1.55 * u, wa
 
 def add_source_gaussian(name="gaussian",x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, injection_axis="x", direction="forward",
 						polarization_angle=0, angle_theta=0, angle_phi=0, wavelength_start=1.55 * u,
-						wavelength_stop=1.55 * u, source_shape="Gaussian"):
+						wavelength_stop=1.55 * u, source_shape="Gaussian",waist_radius_w0=None):
 	FD = get_fdtd_instance()
 	ob_source_gasussian = FD.addgaussian()
 	FD.set("injection axis", injection_axis)
@@ -58,6 +58,8 @@ def add_source_gaussian(name="gaussian",x_min=0, x_max=0, y_min=0, y_max=0, z_mi
 	FD.set("angle theta", angle_theta)
 	FD.set("polarization angle", polarization_angle)
 	FD.set("source shape", source_shape)
+	if waist_radius_w0:
+		FD.set("waist radius w0",waist_radius_w0)
 	return ob_source_gasussian
 
 
