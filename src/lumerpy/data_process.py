@@ -254,6 +254,7 @@ def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(
 	fdtd_y_span = FD.getnamed("FDTD", "y span")
 	scale_ratio = (fdtd_y_span / size[1])
 	extra_gap_y = (period - width) / 2  # 额外抬高半个槽和槽之间的间距
+	extra_gap_y = extra_gap_y + width  # 场发射位置本来就在槽和槽中间
 	out_y_ls = []
 	starts_ls = []
 	out_y_start_ls = []
