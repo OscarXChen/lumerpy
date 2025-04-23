@@ -201,7 +201,7 @@ def add_basic_monitors_X_prop(x_start=0, x_end=0, distance=0, fdtd_x_min=0, fdtd
 def add_eri_monitors(metaline_ls, layer_num):
 	# 这里有bug，先不改了
 	name_series_eri = "eri"
-	print(len(metaline_ls))
+	print(f"共放置监视器数量：{len(metaline_ls)}")
 	metalin_layer_num=int(len(metaline_ls) / layer_num)
 	for j in range(layer_num):  # 放完一层放下一层
 		name_layer_eri = name_series_eri + f"{j}"

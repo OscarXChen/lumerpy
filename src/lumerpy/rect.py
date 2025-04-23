@@ -25,7 +25,7 @@ def add_slab(name="", x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, mate
 	FD.set("y", 0)
 	FD.set("z", 0)
 	props = OrderedDict([
-		("name", "slab layer"),
+		("name", name),
 		("x min", x_min),
 		("x max", x_max),
 		("y min", y_min),

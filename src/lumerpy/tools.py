@@ -164,7 +164,7 @@ def check_path_and_file(file_path, file_name, template_file=None):
 
 def get_single_inputs_center_x(
 		channels=2, data_single_scale=(1, 10), margins_cycle=(0.1, 0.1, 0.1, 0.1),
-		duty_cycle=0.6):
+		duty_cycle=0.6, shift_flag=False):
 	"""返回各输入通道的中心像素值，开始像素值，通道宽度"""
 	data_single_h, data_single_w = data_single_scale
 	top_rate, bottom_rate, left_rate, right_rate = margins_cycle
@@ -192,16 +192,19 @@ def get_single_inputs_center_x(
 	single_inputs_w = int(single_cycle_w * duty_cycle)
 
 	centers = []
-	starts=[]
+	starts = []
+	shift = (single_cycle_w - int(single_cycle_w * duty_cycle))/2
 	for i in range(channels):
 		start_x = margin_L + i * single_cycle_w
+		if shift_flag:
+			start_x = start_x + shift
 		starts.append(start_x)
 		# 原来的中心 + 额外往左 0.5，得到像素视觉中心
 		center_x = start_x + single_inputs_w / 2.0 - 0.5
+		if shift_flag:
+			center_x = center_x + shift
 		centers.append(center_x)
 
-	return centers,starts,single_inputs_w
+	return centers, starts, single_inputs_w
 
 # print(get_single_inputs_center_x(channels=2,data_single_scale=(1,21),duty_cycle=0.5,margins_cycle=(0,0,0,0)))
-
-
