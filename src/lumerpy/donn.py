@@ -65,6 +65,9 @@ def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * 
 				length_pin = length_pin + 1
 			y = y + period  # 向y正方向放置下一个槽
 		x = x + distance  # 向x正方形放置下一个层
+		# x = x + distance + 2 * u  # 向x正方形放置下一个层
+		# print("警告，这里x随层有位移！")
+	# x = x - 2 * u * layer_num
 	# return metaline_ls[-1]["x max"], y - period / 2  # 对应②
 	return x, y - period / 2, metaline_ls  # 对应②
 
@@ -375,5 +378,5 @@ def phase_to_length_database(db_file: str, targets_file: str, k: int = 2):
 		results.append(y_pred)
 
 	# print(results)  # 题目要求“以列表形式打印输出”
-	results_np = np.array(results)*1e-6
+	results_np = np.array(results) * 1e-6
 	return results_np
