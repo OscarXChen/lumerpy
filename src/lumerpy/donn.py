@@ -10,7 +10,7 @@ u = 1e-6
 
 
 def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u,
-				  layer_num=1, group_num=3, layer_temp=0
+				  layer_num=1, group_num=3, layer_temp=0,material="SiO2 (Glass) - Palik"
 				  ):
 	metaline_ls = []
 	FD = get_fdtd_instance()
@@ -42,7 +42,7 @@ def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * 
 											 x_min=x, x_max=x + length_ls[length_pin],
 											 y_min=y_min, y_max=y_max,
 											 z_min=0, z_max=height,
-											 material="SiO2 (Glass) - Palik"))
+											 material=material))
 			# FD.addtogroup("slots")		# 如果添加到槽组里会有很多bug，例如不方便通过对象列表访问了，这里先注释掉
 			# 这一段开始添加槽监视器
 			# lupy.add_power_monitor(name_phase + "_front", monitor_type="2D X-normal", x_min=x, x_max=x,

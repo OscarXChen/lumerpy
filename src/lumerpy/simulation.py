@@ -17,7 +17,6 @@ def add_simulation_fdtd(x=0, y=0, z=0, x_min=0, x_max=0, y_min=0, y_max=0, z_min
 		("y max", y_max),
 		("z min", z_min),
 		("z max", z_max),
-		("background material", background_material),
 		("x min bc", x_min_bc),
 		("x max bc", x_max_bc),
 		("y min bc", y_min_bc),
@@ -27,7 +26,7 @@ def add_simulation_fdtd(x=0, y=0, z=0, x_min=0, x_max=0, y_min=0, y_max=0, z_min
 	])
 	ob_fdtd = FD.addfdtd(properties=props)
 	FD.set("mesh accuracy", mesh_accuracy)
-
+	FD.set("background material", background_material)
 	return ob_fdtd
 
 

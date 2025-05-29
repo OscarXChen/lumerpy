@@ -32,11 +32,11 @@ u = 1e-6
 import numpy as np
 
 input("输入回车继续")
-lupy.plot_initialize()
-lupy.cal_eff_delta("eri00")
-lupy.cal_eff_delta("eri01")
-lupy.cal_eff_delta("eri02")
-lupy.cal_eff_delta("eri03")
+# lupy.plot_initialize()
+# lupy.cal_eff_delta("eri00")
+# lupy.cal_eff_delta("eri01")
+# lupy.cal_eff_delta("eri02")
+# lupy.cal_eff_delta("eri03")
 
 # input("输入回车结束")
 
