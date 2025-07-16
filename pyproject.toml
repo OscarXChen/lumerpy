@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lumerpy"
-version = "1.1.0"
+version = "1.3.0"
 description = "A Python package that provides a secondary wrapper for the official Python API of the optical simulation software Lumerical, enabling easier usage in more complex scenarios."
 authors = ["OscarxChen <oscarxchen@outlook.com>"]
 readme = "README.md"
@@ -11,6 +11,7 @@ repository = "https://github.com/oscarxchen/lumerpy"
 [tool.poetry.dependencies]
 python = ">=3.7"
 numpy = "*"
+matplotlib = "*"
 
 [build-system]
 requires = ["poetry-core"]
