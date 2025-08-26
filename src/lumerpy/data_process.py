@@ -284,3 +284,33 @@ def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(
 	# print(f"可能输出区域为：{out_y_range}")
 	print(f"输出区域是：区域 {idx}，并且各区域输出值为：{output_energy_ls}")
 	return idx,output_energy_ls
+
+
+import numpy as np
+
+
+def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
+	"""
+	用 np.loadtxt 读取 CSV 文件并返回唯一记录数和唯一记录
+
+	参数:
+		path: str, CSV 文件路径
+		delimiter: str, 分隔符，默认逗号 ","
+		dtype: 数据类型，默认 float
+
+	返回:
+		unique_count: int, 不重复记录数
+		unique_records: ndarray, shape=(n_unique, n_cols)
+	"""
+	# 读取整个 CSV 文件
+	if has_header:
+		data = np.loadtxt(path, delimiter=delimiter, dtype=dtype, skiprows=1)
+	else:
+		data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
+
+	# 找到唯一行
+	unique_records, idx = np.unique(data, axis=0, return_index=True)
+	unique_records = unique_records[np.argsort(idx)]	# 保持原本的顺序
+	unique_count = unique_records.shape[0]
+
+	return unique_count, unique_records
