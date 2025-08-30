@@ -216,7 +216,8 @@ def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
 # 	# 我现在希望：
 # 	# 选取所有x在我指定的范围（例如：index=[3,5]）中的Ey数据，如何做？
 
-def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(0, 0, 0, 0), power_name="local_outputs",
+def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(0, 0, 0, 0),
+						   power_name="local_outputs",
 						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
 						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True):
@@ -291,27 +292,30 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 
 
 def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
-	"""
-	用 np.loadtxt 读取 CSV 文件并返回唯一记录数和唯一记录
-
-	参数:
-		path: str, CSV 文件路径
-		delimiter: str, 分隔符，默认逗号 ","
-		dtype: 数据类型，默认 float
-
-	返回:
-		unique_count: int, 不重复记录数
-		unique_records: ndarray, shape=(n_unique, n_cols)
-	"""
-	# 读取整个 CSV 文件
-	if has_header:
-		data = np.loadtxt(path, delimiter=delimiter, dtype=dtype, skiprows=1)
-	else:
-		data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
-
-	# 找到唯一行
-	unique_records, idx = np.unique(data, axis=0, return_index=True)
-	unique_records = unique_records[np.argsort(idx)]  # 保持原本的顺序
-	unique_count = unique_records.shape[0]
-
-	return unique_count, unique_records
+	"""本函数已弃用，请调用datas.py里的同名函数"""
+	# """
+	# 用 np.loadtxt 读取 CSV 文件并返回唯一记录数和唯一记录
+	#
+	# 参数:
+	# 	path: str, CSV 文件路径
+	# 	delimiter: str, 分隔符，默认逗号 ","
+	# 	dtype: 数据类型，默认 float
+	#
+	# 返回:
+	# 	unique_count: int, 不重复记录数
+	# 	unique_records: ndarray, shape=(n_unique, n_cols)
+	# """
+	# # 读取整个 CSV 文件
+	# if has_header:
+	# 	data = np.loadtxt(path, delimiter=delimiter, dtype=dtype, skiprows=1)
+	# else:
+	# 	data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
+	#
+	# # 找到唯一行
+	# unique_records, idx = np.unique(data, axis=0, return_index=True)
+	# unique_records = unique_records[np.argsort(idx)]  # 保持原本的顺序
+	# unique_count = unique_records.shape[0]
+	#
+	# return unique_count, unique_records
+	txt = "\n\t本函数已弃用，请调用difrannpy库里datas.py的同名函数。\n\t如果必然需要本函数，请手动进入源代码，删去注释使用"
+	raise NotImplementedError(txt)
