@@ -193,13 +193,13 @@ def get_single_inputs_center_x(
 
 	centers = []
 	starts = []
-	shift = (single_cycle_w - int(single_cycle_w * duty_cycle))/2
+	shift = (single_cycle_w - int(single_cycle_w * duty_cycle)) / 2
 	for i in range(channels):
 		start_x = margin_L + i * single_cycle_w
 		if shift_flag:
 			start_x = start_x + shift
 		starts.append(start_x)
-		# 原来的中心 + 额外往左 0.5，得到像素视觉中心
+		# 原来的中心 + 额外往左 0.5。因为像素是分立的，例如只有2个像素，那么中心位置应当是按照1.5个像素考虑比较合适。但是需要注意1.5个像素是“不存在的”
 		center_x = start_x + single_inputs_w / 2.0 - 0.5
 		if shift_flag:
 			center_x = center_x + shift
