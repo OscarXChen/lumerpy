@@ -113,8 +113,7 @@ def save_records(file_path=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-pla
 	formatted_time = time.strftime("%Y%m%d_%H-%M-%S", time.localtime())
 	saved_file = file_name.removesuffix(".fsp") + f"_{formatted_time}" + ".fsp"
 	# saved_file=file_name.removesuffix(".fsp")+f"k{k}"+".fsp"
-	saved_file_total = os.path.join(file_path_copy,
-									saved_file)
+	saved_file_total = os.path.join(file_path_copy, saved_file)
 	copy_file_total = os.path.join(file_path, file_name)
 	shutil.copy(copy_file_total, saved_file_total)
 	return True

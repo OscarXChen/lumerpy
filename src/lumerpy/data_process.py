@@ -216,10 +216,10 @@ def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
 # 	# 我现在希望：
 # 	# 选取所有x在我指定的范围（例如：index=[3,5]）中的Ey数据，如何做？
 
-def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(0, 0, 0, 0), power_name="local_outputs",
-				period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
-				file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
-				file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True):
+def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(0, 0, 0, 0), power_name="local_outputs",
+						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
+						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
+						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True):
 	import sys
 	import os
 
