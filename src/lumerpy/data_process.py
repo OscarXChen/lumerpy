@@ -244,7 +244,7 @@ def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(
 	import numpy as np
 
 	lupy.plot_initialize()
-	Edatas = FD.getresult(power_name, "E")
+	# Edatas = FD.getresult(power_name, "E")
 	out_y_ls_temp, out_y_start_ls_temp, out_y_pixel_scale = lupy.tools.get_single_inputs_center_x(
 		channels=channals_output,
 		data_single_scale=size,
@@ -254,14 +254,14 @@ def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(
 	fdtd_y_span = FD.getnamed("FDTD", "y span")
 	scale_ratio = (fdtd_y_span / size[1])
 	extra_gap_y = (period - width) / 2  # 额外抬高半个槽和槽之间的间距
-	extra_gap_y = extra_gap_y + width  # 场发射位置本来就在槽和槽中间
+	extra_gap_y = extra_gap_y + width  # 场发射位置本来就在槽和槽中间，这两行代码下来，这个额外抬高的y值就对应着槽和槽中间的柜板的y方向中心
 	out_y_ls = []
 	starts_ls = []
 	out_y_start_ls = []
 	out_y_range = np.zeros((len(out_y_ls_temp), 2))
 	out_y_span = out_y_pixel_scale * scale_ratio
-	for i in range(len(out_y_ls_temp)):
-		out_y_ls.append(out_y_ls_temp[i] * scale_ratio + extra_gap_y)
+	for i in range(len(out_y_ls_temp)):		# 对每个输入通道操作
+		out_y_ls.append(out_y_ls_temp[i] * scale_ratio + extra_gap_y)		# 这里应该有点问题
 		out_y_start_ls.append(out_y_start_ls_temp[i] * scale_ratio + extra_gap_y)
 		out_y_range[i, :] = out_y_start_ls[i], out_y_start_ls[i] + out_y_span
 	# print(f"输出位置[{i}]：{out_y_start_ls[i]},{out_y_start_ls[i] + out_y_span}")
