@@ -28,9 +28,9 @@ def select_E_component_by_range_from_dataset(
 		max_val=None,
 		fixed_axis_name=None,
 		fixed_axis_value=None,
-		plot=False,
+		plot_Ey_flag=False,
 		Energyshow=True,
-		selected_range=None, plot_energy=False, save_path=None
+		selected_range=None, plot_energy_flag=False, save_path=None
 ):
 	axis_map = {'x': 0, 'y': 1, 'z': 2}
 	comp_map = {'Ex': 0, 'Ey': 1, 'Ez': 2}
@@ -92,7 +92,7 @@ def select_E_component_by_range_from_dataset(
 	# -------------------------
 	# 🎨 统一纵坐标画图：电场分布
 	# -------------------------
-	if plot:
+	if plot_Ey_flag:
 		n = len(region_list)
 		vmin = min([np.min(e) for e in E_all])
 		vmax = max([np.max(e) for e in E_all])
@@ -169,7 +169,7 @@ def select_E_component_by_range_from_dataset(
 						verticalalignment='top')
 
 		plt.tight_layout()
-		if plot_energy:
+		if plot_energy_flag:
 			plt.show()
 			if save_path:
 				import os
@@ -185,7 +185,7 @@ def select_E_component_by_range_from_dataset(
 
 
 def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
-				   plot=False, Energyshow=True, plot_energy=False,
+				   plot_Ey_flag=False, Energyshow=True, plot_energy_flag=False,
 				   axis_name='y', component='Ey', fixed_axis_name='z', save_path=False):
 	FD = get_fdtd_instance()
 	Edatas = FD.getresult(power_name, "E")
@@ -193,7 +193,7 @@ def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
 	E_list, coord_list, z_used, energy_list = select_E_component_by_range_from_dataset(
 		Edatas, axis_name=axis_name, component=component, fixed_axis_name=fixed_axis_name,
 		fixed_axis_value=z_fixed, selected_range=selected_range,
-		plot=plot, Energyshow=Energyshow, plot_energy=plot_energy, save_path=save_path)
+		plot_Ey_flag=plot_Ey_flag, Energyshow=Energyshow, plot_energy_flag=plot_energy_flag, save_path=save_path)
 
 	# print(energy_list)
 	idx = int(np.argmax(energy_list))
@@ -219,7 +219,7 @@ def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
 def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(0, 0, 0, 0), power_name="local_outputs",
 				period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 				file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
-				file_name=r"m00_temp.fsp", save_path=False):
+				file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True):
 	import sys
 	import os
 
@@ -276,17 +276,18 @@ def get_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(
 	# 	[12e-6, 18e-6]
 	# ])
 
-	idx, energy_list = lupy.get_simple_out(selected_range=out_y_metric_total, power_name=power_name, z_fixed=z_fixed,
-										   plot=True, plot_energy=True, save_path=save_path)
+	output_area_code, energy_list = lupy.get_simple_out(selected_range=out_y_metric_total, power_name=power_name,
+														z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+														plot_energy_flag=plot_energy_flag, save_path=save_path)
 	output_energy_ls = [round(float(x), 4) for x in energy_list]
-	# print(f"输出区域是：{idx}，并且各输出值为：{output_energy_ls}")
+	# print(f"输出区域是：{output_area_code}，并且各输出值为：{output_energy_ls}")
 
 	for i in range(channals_output):
 		area_start, area_end = out_y_metric_total[i, :]
 		print(f"区域 {i} 范围：{area_start * 1e6:.2f},\t{area_end * 1e6:.2f}")
 	# print(f"可能输出区域为：{out_y_metric_total}")
-	print(f"输出区域是：区域 {idx}，并且各区域输出值为：{output_energy_ls}")
-	return idx, output_energy_ls
+	print(f"输出区域是：区域 {output_area_code}，并且各区域输出值为：{output_energy_ls}")
+	return output_area_code, output_energy_ls
 
 
 def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
