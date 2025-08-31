@@ -203,7 +203,13 @@ def get_single_inputs_center_x(
 		if shift_flag:
 			center_x = center_x + shift
 		centers.append(center_x)
-
-	return centers, starts, single_inputs_w
+	extra_gap = 1 / 2 * (single_inputs_w / duty_cycle - single_inputs_w)
+	# 这里的extra_gap实际上起到shift的作用，但是为了提高可读性，打算将其放到函数外面去处理；extra_gap的作用就是平移半个没有光的那个方框长度
+	# 参考的外面处理方法为：
+	# effective_y_span = slots_y_max - slots_y_min
+	# scale_ratio = (effective_y_span / size[1])
+	# source_y_ls.append(centers[i] * scale_ratio + extra_gap * scale_ratio)
+	# starts_ls.append(starts[i] * scale_ratio + extra_gap_y * scale_ratio)
+	return centers, starts, single_inputs_w, extra_gap
 
 # print(get_single_inputs_center_x(channels=2,data_single_scale=(1,21),duty_cycle=0.5,margins_cycle=(0,0,0,0)))
