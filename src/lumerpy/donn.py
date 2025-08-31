@@ -10,7 +10,7 @@ u = 1e-6
 
 
 def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u,
-				  layer_num=1, group_num=3, layer_temp=0,material="SiO2 (Glass) - Palik"
+				  layer_num=1, group_num=3, layer_temp=0, material="SiO2 (Glass) - Palik"
 				  ):
 	metaline_ls = []
 	FD = get_fdtd_instance()
@@ -65,11 +65,74 @@ def add_metalines(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * 
 				length_pin = length_pin + 1
 			y = y + period  # 向y正方向放置下一个槽
 		x = x + distance  # 向x正方形放置下一个层
-		# x = x + distance + 2 * u  # 向x正方形放置下一个层
-		# print("警告，这里x随层有位移！")
+	# x = x + distance + 2 * u  # 向x正方形放置下一个层
+	# print("警告，这里x随层有位移！")
 	# x = x - 2 * u * layer_num
 	# return metaline_ls[-1]["x max"], y - period / 2  # 对应②
 	return x, y - period / 2, metaline_ls  # 对应②
+
+
+def add_metalines_shift(length_ls, x_start=0, y_start=0, width=0.2 * u, height=0.22 * u, period=0.5 * u, distance=3 * u,
+						layer_num=1, group_num=3, layer_temp=0, material="SiO2 (Glass) - Palik"
+						):
+	"""
+	批量化放置衍射线，并返回相关参数
+	需要注意，返回的x_min,x_max,y_min,y_max都是下一个周期的初始位置，其真实结果需要减去周期值
+	"""
+	metaline_ls = []
+	FD = get_fdtd_instance()
+	FD.addstructuregroup(name="metalines" + str(layer_temp))
+	FD.set("x", 0)
+	FD.set("y", 0)
+	FD.set("z", 0)
+	x = x_start  # 从x=0开始放槽
+	y = y_start  # 从y=0开始放槽，注意这里y指的是SiO2槽的中心位置，这个中心位置为0，意味着Si槽的中心位置和理论设计位置重合
+	length_pin = 0  # 用于位移槽长列表的指针
+	name_series_slot = "metalines"
+	name_series_phase = "phase"
+	# layer_num = length_ls.shape[0]	# 为了兼容性，还是先手动指定层数吧
+	for j in range(layer_num):  # 放完一层放下一层
+		# y = -width / 2  # 向下偏移1/2width长度，使得硅槽中心位置和理论设计位置重合
+		# y = 0
+		name_layer_slot = name_series_slot + str(layer_temp)
+		name_layer_phase = name_series_phase + f"{j}"
+		group_count = 0  # 用于辅助计数槽组是否放置完毕的中间变量
+		for i in range(int(group_num * len(length_ls) / layer_num)):  # 放完一个放下一个
+			name_slot = name_layer_slot + f"{i}"
+			name_phase = name_layer_phase + f"{i}"
+			y_min, y_max = lupy.tools.span_min(y, width)
+			metaline_ls.append(lupy.add_rect(name_slot,
+											 x_min=x, x_max=x + length_ls[length_pin],
+											 y_min=y_min, y_max=y_max,
+											 z_min=0, z_max=height,
+											 material=material))
+			# FD.addtogroup("slots")		# 如果添加到槽组里会有很多bug，例如不方便通过对象列表访问了，这里先注释掉
+			# 这一段开始添加槽监视器
+			# lupy.add_power_monitor(name_phase + "_front", monitor_type="2D X-normal", x_min=x, x_max=x,
+			# 				  y_min=y - width / 2, y_max=y + width / 2, z_min=0, z_max=height)
+			# # FD.addtogroup("slots")
+			# lupy.add_power_monitor(name_phase + "_back", monitor_type="2D X-normal", x_min=x + length_ls[length_pin],
+			# 				  x_max=x + length_ls[length_pin], y_min=y - width / 2, y_max=y + width / 2, z_min=0,
+			# 				  z_max=height)
+			# # FD.addtogroup("slots")
+			# lupy.add_power_monitor(name_phase + "_oversee", monitor_type="2D Z-normal", x_min=x,
+			# 				  x_max=x + length_ls[length_pin], y_min=y - width / 2, y_max=y + width / 2,
+			# 				  z_min=height / 2,
+			# 				  z_max=height / 2)
+			# # FD.addtogroup("slots")
+			# lupy.add_power_monitor(name=name_phase + "_middle", x_min=x, x_max=x + length_ls[length_pin], y_min=y,
+			# 				   y_max=y,
+			# 				   z_min=height / 2, z_max=height / 2)
+			group_count = group_count + 1
+			if group_count % group_num == 0:
+				length_pin = length_pin + 1
+			y = y + period  # 向y正方向放置下一个槽
+		x = x + distance  # 向x正方形放置下一个层
+	x_min = x_start
+	x_max = x
+	y_min = y_start - width / 2
+	y_max = y - width / 2
+	return x_min, x_max, y_min, y_max, metaline_ls
 
 
 # return x, y	# 对应①
