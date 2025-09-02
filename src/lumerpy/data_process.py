@@ -249,7 +249,8 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 		duty_cycle=duty_cycle,
 		margins_cycle=margins_cycle)
 
-	fdtd_y_span = FD.getnamed("FDTD", "y span")  # 这里要改一下，不应该通过FDTD的区域范围获取有效宽度，这部分工作挺麻烦的
+	# fdtd_y_span = FD.getnamed("FDTD", "y span")  # 这里要改一下，不应该通过FDTD的区域范围获取有效宽度，这部分工作挺麻烦的
+	fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧
 	scale_ratio = (fdtd_y_span / size[1])
 	# extra_gap_y = (period - width) / 2  # 额外抬高半个槽和槽之间的间距
 	# extra_gap_y = extra_gap_y + width  # 场发射位置本来就在槽和槽中间，这两行代码下来，这个额外抬高的y值就对应着槽和槽中间的硅板的y方向中心
@@ -292,34 +293,31 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 
 
 def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
-	"""本函数已弃用，请调用datas.py里的同名函数"""
-	# """
-	# 用 np.loadtxt 读取 CSV 文件并返回唯一记录数和唯一记录
-	#
-	# 参数:
-	# 	path: str, CSV 文件路径
-	# 	delimiter: str, 分隔符，默认逗号 ","
-	# 	dtype: 数据类型，默认 float
-	#
-	# 返回:
-	# 	unique_count: int, 不重复记录数
-	# 	unique_records: ndarray, shape=(n_unique, n_cols)
-	# """
-	# # 读取整个 CSV 文件
-	# if has_header:
-	# 	data = np.loadtxt(path, delimiter=delimiter, dtype=dtype, skiprows=1)
-	# else:
-	# 	data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
-	#
-	# # 找到唯一行
-	# unique_records, idx = np.unique(data, axis=0, return_index=True)
-	# unique_records = unique_records[np.argsort(idx)]  # 保持原本的顺序
-	# unique_count = unique_records.shape[0]
-	#
-	# return unique_count, unique_records
-	txt = "\n\t本函数已弃用，请调用difrannpy库里datas.py的同名函数。\n\t如果必然需要本函数，请手动进入源代码，删去注释使用"
-	raise NotImplementedError(txt)
+	"""
+	用 np.loadtxt 读取 CSV 文件并返回唯一记录数和唯一记录
 
+	参数:
+		path: str, CSV 文件路径
+		delimiter: str, 分隔符，默认逗号 ","
+		dtype: 数据类型，默认 float
+
+	返回:
+		unique_count: int, 不重复记录数
+		unique_records: ndarray, shape=(n_unique, n_cols)
+	"""
+	# txt = "\n\t本函数已弃用，请调用difrannpy库里datas.py的同名函数。\n\t如果必然需要本函数，请手动进入源代码，删去注释使用"
+	# raise NotImplementedError(txt)
+	# 读取整个 CSV 文件
+	if has_header:
+		data = np.loadtxt(path, delimiter=delimiter, dtype=dtype, skiprows=1)
+	else:
+		data = np.loadtxt(path, delimiter=delimiter, dtype=dtype)
+
+	# 找到唯一行
+	unique_records, idx = np.unique(data, axis=0, return_index=True)
+	unique_records = unique_records[np.argsort(idx)]  # 保持原本的顺序
+	unique_count = unique_records.shape[0]
+	return unique_count, unique_records
 
 def save_csv_results(save_path, save_name, int_to_record, list_to_append="", save_index=-1):
 	'''以每行记录形如：【0,0.1,0.2】的形式保存仿真结果为csv格式'''
@@ -331,3 +329,68 @@ def save_csv_results(save_path, save_name, int_to_record, list_to_append="", sav
 	with open(file_csv_path, "a+") as fp:
 		np.savetxt(fp, [save_temp], delimiter=",")
 	print(f"csv文件已保存至：{file_csv_path}")
+
+
+def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_flag=False):
+	data_count, data_raw = read_unique_csv(path_data)
+
+	data_y = data_raw[:, 0]
+	data_X = data_raw[:, 1:]
+
+	data_X_decode = np.apply_along_axis(recover_original, axis=1, arr=data_X)
+	# print(f"展示前16条经过译码的输入数据为：\n{data_X_decode[0:16]}")
+	pd_count, pd_raw = read_unique_csv(path_pd)
+
+	pd_overview = pd_raw[0]
+	pd_pds = pd_raw[1:]
+	pd_decode = np.apply_along_axis(recover_original, axis=1, arr=pd_pds)
+
+	channels_in = len(data_X_decode[0])
+	channels_out = len(pd_decode)
+	if show_flag:
+		print(f"不重复训练数据共有：{data_count}条")
+		print(f"展示第0条输入数据为：\n{data_X[0]},展示前16条输出数据为：\n{data_y[0:16]}")
+		print(f"不重复pd数据共有：{pd_count}条")
+		print(f"展示前8条经过译码的输出pd为：\n{pd_decode[0:8]}")
+	if not return_data_decode_flag:
+		return channels_in, channels_out
+	else:
+		return channels_in, channels_out, data_X_decode
+
+def recover_original(arr, repeat=3):
+	"""
+	从扩展数组恢复原始数组
+
+	参数:
+		arr: numpy 一维数组 (扩展结果)
+		repeat: 每个元素重复次数 (默认 3)
+
+	返回:
+		原始数组 (numpy 一维数组)
+	"""
+	arr = np.asarray(arr)
+
+	# 第一步：解开重复
+	if arr.size % repeat != 0:
+		raise ValueError("数组长度不能被 repeat 整除")
+	reduced = arr.reshape(-1, repeat)[:, 0]  # 取每组的第一个
+
+	# 第二步：去掉中间插的 0（取偶数位置）
+	original = reduced[::2]
+
+	return original.astype(int)
+
+def get_data_single_scale(channels_in, each_pix=3, data_single_scale_row=1):
+	data_single_scale_col = channels_in * 2 * each_pix  # 默认占空比为50%，所以搞出2倍
+	# 这里还有一个事必须提一下，如果bit_expand_flag=True，那么由于扩展组合编码的关系，实际的col数会是2倍
+	data_single_scale = (data_single_scale_row, data_single_scale_col)
+	# 下面这个位扩展标志位相关代码已弃用，改成在调用函数的外面直接翻倍输入通道
+	# if bit_expand_flag:  # 如果采用扩展组合编码
+	# 	# 这里插一句，这里有点屎山的感觉了，因为data_single_scale这个元组需要给generate_data_total()函数
+	# 	# 但是如果使用扩展组合编码的话，实际上的data_single_scale会变为两倍，所以搞出了一个data_single_scale_temp变量去存这个结果
+	# 	# 但是实际上后面的程序，哪哪都要这个data_singel_scale_temp，包括后面提到的size也是
+	# 	# 也就是说，变量size才是真正的“数据尺寸”
+	# 	data_single_scale_temp = (data_single_scale[0], data_single_scale[1] * 2)
+	# else:
+	# 	data_single_scale_temp = data_single_scale
+	return data_single_scale
