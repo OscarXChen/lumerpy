@@ -220,7 +220,12 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 						   power_name="local_outputs",
 						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
-						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True):
+						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True,
+						   save_flag=False):
+	'''
+	返回输出的区域编码和能量；
+	此外，save_flag若为True，则将能量图保存到save_path
+	'''
 	import sys
 	import os
 
@@ -277,9 +282,15 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 	# 	[12e-6, 18e-6]
 	# ])
 
-	output_area_code, energy_list = lupy.get_simple_out(selected_range=out_y_metric_total, power_name=power_name,
-														z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
-														plot_energy_flag=plot_energy_flag, save_path=save_path)
+	if save_flag:
+		output_area_code, energy_list = lupy.get_simple_out(selected_range=out_y_metric_total, power_name=power_name,
+															z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+															plot_energy_flag=plot_energy_flag, save_path=save_path)
+	else:
+		output_area_code, energy_list = lupy.get_simple_out(selected_range=out_y_metric_total, power_name=power_name,
+															z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+															plot_energy_flag=plot_energy_flag,
+															save_path=False)  # 我知道这里逻辑很古怪，先这样吧
 	output_energy_ls = [round(float(x), 4) for x in energy_list]
 	# print(f"输出区域是：{output_area_code}，并且各输出值为：{output_energy_ls}")
 
@@ -319,3 +330,15 @@ def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
 	# return unique_count, unique_records
 	txt = "\n\t本函数已弃用，请调用difrannpy库里datas.py的同名函数。\n\t如果必然需要本函数，请手动进入源代码，删去注释使用"
 	raise NotImplementedError(txt)
+
+
+def save_csv_results(save_path, save_name, int_to_record, list_to_append="", save_index=-1):
+	'''以每行记录形如：【0,0.1,0.2】的形式保存仿真结果为csv格式'''
+	if save_index == -1:
+		file_csv_path = save_path + save_name.removesuffix(".fsp") + ".csv"
+	else:
+		file_csv_path = save_path + save_name.removesuffix(".fsp") + "-" + str(save_index) + ".csv"
+	save_temp = int_to_record + list(list_to_append)
+	with open(file_csv_path, "a+") as fp:
+		np.savetxt(fp, [save_temp], delimiter=",")
+	print(f"csv文件已保存至：{file_csv_path}")
