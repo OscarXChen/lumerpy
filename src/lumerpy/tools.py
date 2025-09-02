@@ -119,13 +119,14 @@ def save_records(file_path=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-pla
 	return True
 
 
-def check_path_and_file(file_path, file_name, template_file=None):
+def check_path_and_file(file_path, file_name, auto_newfile=True, template_file=None):
 	"""
 	检查路径和文件名是否存在。
 	如果路径不存在则创建路径，如果文件名不存在则复制模板文件到指定路径并重命名。
 
 	:param file_path: 文件路径 (字符串)
 	:param file_name: 文件名 (字符串)
+	:param auto_newfile: 若路径不存在，是否自动创建文件
 	:param template_file: 模板文件路径 (字符串，可选，默认与库代码同路径下的模板文件)
 	"""
 	# 获取库文件所在的目录
@@ -140,11 +141,12 @@ def check_path_and_file(file_path, file_name, template_file=None):
 
 	# 检查路径是否存在
 	if not os.path.exists(file_path):
-		print(f"路径 '{file_path}' 不存在，正在创建路径...")
-		os.makedirs(file_path)
-		print(f"路径 '{file_path}' 创建成功！")
-	# else:
-	# print(f"路径 '{file_path}' 已存在。")
+		if auto_newfile:  # 自动创建文件
+			print(f"路径 '{file_path}' 不存在，正在创建路径...")
+			os.makedirs(file_path)
+			print(f"路径 '{file_path}' 创建成功！")
+		else:
+			raise FileExistsError("文件不存在，请检查文件路径")
 
 	# 检查文件是否存在
 	full_file_path = os.path.join(file_path, file_name)
@@ -203,7 +205,7 @@ def get_single_inputs_center_x(
 		if shift_flag:
 			center_x = center_x + shift
 		centers.append(center_x)
-	extra_gap = 1 / 2 * (single_inputs_w / duty_cycle - single_inputs_w)
+	extra_gap = 1 / 2 * (single_inputs_w / duty_cycle - single_inputs_w)  # 这里的extra_gap好像并不需要，因为训练的时候extra_gap就是0
 	# 这里的extra_gap实际上起到shift的作用，但是为了提高可读性，打算将其放到函数外面去处理；extra_gap的作用就是平移半个没有光的那个方框长度
 	# 参考的外面处理方法为：
 	# effective_y_span = slots_y_max - slots_y_min

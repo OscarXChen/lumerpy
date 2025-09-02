@@ -21,17 +21,10 @@ def plot_initialize(paper_font=False):
 
 
 def select_E_component_by_range_from_dataset(
-		Edatas,
-		axis_name,
-		component='Ey',
-		min_val=None,
-		max_val=None,
-		fixed_axis_name=None,
-		fixed_axis_value=None,
-		plot_Ey_flag=False,
-		Energyshow=True,
-		selected_range=None, plot_energy_flag=False, save_path=None
+		Edatas, axis_name, component='Ey', min_val=None, max_val=None, fixed_axis_name=None, fixed_axis_value=None,
+		plot_Ey_flag=False, Energyshow=True, selected_range=None, plot_energy_flag=False, save_path=None
 ):
+	# 这里的Energyshow好像只是为了返回能量分布列表
 	axis_map = {'x': 0, 'y': 1, 'z': 2}
 	comp_map = {'Ex': 0, 'Ey': 1, 'Ez': 2}
 
@@ -231,13 +224,9 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 
 	# 用户在这里设置 API 和文件路径
 	api_path = r"C:/Program Files/Lumerical/v241/api/python"
-	# file_path = r"E:\0_Work_Documents\Simulation\lumerpy\03_cat"
-	# file_name = r"m01_wg.fsp"
-	# file_name = r"m00_temp.fsp"
 	sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
 	import lumerpy as lupy
-
-	lupy.tools.check_path_and_file(file_path=file_path, file_name=file_name)
+	lupy.tools.check_path_and_file(file_path=file_path, file_name=file_name, auto_newfile=False)
 	# import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
 	lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
 
@@ -254,7 +243,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 
 	lupy.plot_initialize()
 	# Edatas = FD.getresult(power_name, "E")
-	out_y_pixel_center_ls, out_y_pixel_start_ls, out_y_pixel_span = lupy.tools.get_single_inputs_center_x(
+	out_y_pixel_center_ls, out_y_pixel_start_ls, out_y_pixel_span, _ = lupy.tools.get_single_inputs_center_x(
 		channels=channals_output,
 		data_single_scale=size,
 		duty_cycle=duty_cycle,
