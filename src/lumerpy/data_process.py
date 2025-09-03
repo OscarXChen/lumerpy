@@ -4,6 +4,7 @@
 from .fdtd_manager import get_fdtd_instance
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 u = 1e-6
 
@@ -171,8 +172,8 @@ def select_E_component_by_range_from_dataset(
 				current_time = time.strftime("%m%d-%H%M")
 				fig.savefig(f"{save_path}{current_time}_{component}.png", dpi=300)
 				print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
-		for i, e in enumerate(energy_all):
-			print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
+	# for i, e in enumerate(energy_all):
+	# 	print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
 
 	return E_all, coord_all, fixed_coord_value, energy_all if Energyshow else None
 
@@ -214,7 +215,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
 						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True,
-						   save_flag=False):
+						   save_flag=False, show_area_flag=True):
 	'''
 	返回输出的区域编码和能量；
 	此外，save_flag若为True，则将能量图保存到save_path
@@ -283,12 +284,12 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 															save_path=False)  # 我知道这里逻辑很古怪，先这样吧
 	output_energy_ls = [round(float(x), 4) for x in energy_list]
 	# print(f"输出区域是：{output_area_code}，并且各输出值为：{output_energy_ls}")
-
-	for i in range(channals_output):
-		area_start, area_end = out_y_metric_total[i, :]
-		print(f"区域 {i} 范围：{area_start * 1e6:.2f},\t{area_end * 1e6:.2f}")
-	# print(f"可能输出区域为：{out_y_metric_total}")
-	print(f"输出区域是：区域 {output_area_code}，并且各区域输出值为：{output_energy_ls}")
+	if show_area_flag:
+		for i in range(channals_output):
+			area_start, area_end = out_y_metric_total[i, :]
+			print(f"区域 {i} 范围：{area_start * 1e6:.2f},\t{area_end * 1e6:.2f}")
+		# print(f"可能输出区域为：{out_y_metric_total}")
+		print(f"输出区域是：区域 {output_area_code}，并且各区域输出值为：{output_energy_ls}")
 	return output_area_code, output_energy_ls
 
 
@@ -319,16 +320,18 @@ def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
 	unique_count = unique_records.shape[0]
 	return unique_count, unique_records
 
+
 def save_csv_results(save_path, save_name, int_to_record, list_to_append="", save_index=-1):
 	'''以每行记录形如：【0,0.1,0.2】的形式保存仿真结果为csv格式'''
 	if save_index == -1:
-		file_csv_path = save_path + save_name.removesuffix(".fsp") + ".csv"
+		file_csv_path = os.path.join(save_path, save_name.removesuffix(".fsp")) + ".csv"
 	else:
-		file_csv_path = save_path + save_name.removesuffix(".fsp") + "-" + str(save_index) + ".csv"
-	save_temp = int_to_record + list(list_to_append)
+		file_csv_path = os.path.join(save_path, save_name.removesuffix(".fsp")) + "-" + str(save_index) + ".csv"
+	save_temp = [int_to_record] + list(list_to_append)
 	with open(file_csv_path, "a+") as fp:
 		np.savetxt(fp, [save_temp], delimiter=",")
-	print(f"csv文件已保存至：{file_csv_path}")
+	# print(f"csv文件已保存至：{file_csv_path}")
+	return file_csv_path
 
 
 def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_flag=False):
@@ -357,6 +360,7 @@ def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_
 	else:
 		return channels_in, channels_out, data_X_decode
 
+
 def recover_original(arr, repeat=3):
 	"""
 	从扩展数组恢复原始数组
@@ -379,6 +383,7 @@ def recover_original(arr, repeat=3):
 	original = reduced[::2]
 
 	return original.astype(int)
+
 
 def get_data_single_scale(channels_in, each_pix=3, data_single_scale_row=1):
 	data_single_scale_col = channels_in * 2 * each_pix  # 默认占空比为50%，所以搞出2倍

@@ -56,8 +56,8 @@ def hello():
 
 def version():
 	FD = get_fdtd_instance()
-	lupy_version = "1.3.0"
-	version_date = "2025.04.23"
+	lupy_version = "1.4.0"
+	version_date = "2025.09.03"
 	print(f"Lumerpy库版本：{lupy_version}\n"
 		  f"Lumerical版本：{FD.version()}\n"
 		  f"发布时间：{version_date}")
