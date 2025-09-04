@@ -25,7 +25,7 @@ def select_E_component_by_range_from_dataset(
 		Edatas, axis_name, component='Ey', min_val=None, max_val=None, fixed_axis_name=None, fixed_axis_value=None,
 		plot_Ey_flag=False, Energyshow=True, selected_range=None, plot_energy_flag=False, save_path=None
 ):
-	# 这里的Energyshow好像只是为了返回能量分布列表
+	# 这里的Energyshow是为了是否计算能量分布，如果Energyshow为False，那么不会有能量分布的计算，也不会正确保存图像结果
 	axis_map = {'x': 0, 'y': 1, 'z': 2}
 	comp_map = {'Ex': 0, 'Ey': 1, 'Ez': 2}
 
@@ -113,7 +113,6 @@ def select_E_component_by_range_from_dataset(
 				ax.set_ylabel("Other axis index")
 				plt.colorbar(im, ax=ax, label=component)
 		plt.tight_layout()
-		plt.show()
 
 	# -------------------------
 	# 🎨 能量图 + 输出 + 能量标注
@@ -165,13 +164,13 @@ def select_E_component_by_range_from_dataset(
 		plt.tight_layout()
 		if plot_energy_flag:
 			plt.show()
-			if save_path:
-				import os
-				os.makedirs(save_path, exist_ok=True)
-				import time
-				current_time = time.strftime("%m%d-%H%M")
-				fig.savefig(f"{save_path}{current_time}_{component}.png", dpi=300)
-				print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
+		if save_path:
+			import os
+			os.makedirs(save_path, exist_ok=True)
+			import time
+			current_time = time.strftime("%m%d-%H%M")
+			fig.savefig(f"{save_path}{current_time}_{component}.png", dpi=300)
+			print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
 	# for i, e in enumerate(energy_all):
 	# 	print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
 
@@ -385,8 +384,8 @@ def recover_original(arr, repeat=3):
 	return original.astype(int)
 
 
-def get_data_single_scale(channels_in, each_pix=3, data_single_scale_row=1):
-	data_single_scale_col = channels_in * 2 * each_pix  # 默认占空比为50%，所以搞出2倍
+def get_data_single_scale(channels_in, each_pix=3, data_single_scale_row=1, duty_cycle=0.5):
+	data_single_scale_col = channels_in / duty_cycle * each_pix  # 默认占空比为50%，所以搞出2倍
 	# 这里还有一个事必须提一下，如果bit_expand_flag=True，那么由于扩展组合编码的关系，实际的col数会是2倍
 	data_single_scale = (data_single_scale_row, data_single_scale_col)
 	# 下面这个位扩展标志位相关代码已弃用，改成在调用函数的外面直接翻倍输入通道
