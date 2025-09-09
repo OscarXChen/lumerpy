@@ -327,6 +327,7 @@ def save_csv_results(save_path, save_name, int_to_record, list_to_append="", sav
 	else:
 		file_csv_path = os.path.join(save_path, save_name.removesuffix(".fsp")) + "-" + str(save_index) + ".csv"
 	save_temp = [int_to_record] + list(list_to_append)
+	os.makedirs(os.path.dirname(file_csv_path), exist_ok=True)
 	with open(file_csv_path, "a+") as fp:
 		np.savetxt(fp, [save_temp], delimiter=",")
 	# print(f"csv文件已保存至：{file_csv_path}")
