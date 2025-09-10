@@ -214,7 +214,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
 						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True,
-						   save_flag=False, show_area_flag=True):
+						   save_flag=False, show_area_flag=True, effective_y_span_flag=False):
 	'''
 	返回输出的区域编码和能量；
 	此外，save_flag若为True，则将能量图保存到save_path
@@ -248,9 +248,11 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 		data_single_scale=size,
 		duty_cycle=duty_cycle,
 		margins_cycle=margins_cycle)
+	if effective_y_span_flag:
+		fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧
+	else:
+		fdtd_y_span = FD.getnamed("FDTD", "y span")  # 这里要改一下，不应该通过FDTD的区域范围获取有效宽度，这部分工作挺麻烦的
 
-	# fdtd_y_span = FD.getnamed("FDTD", "y span")  # 这里要改一下，不应该通过FDTD的区域范围获取有效宽度，这部分工作挺麻烦的
-	fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧
 	scale_ratio = (fdtd_y_span / size[1])
 	# extra_gap_y = (period - width) / 2  # 额外抬高半个槽和槽之间的间距
 	# extra_gap_y = extra_gap_y + width  # 场发射位置本来就在槽和槽中间，这两行代码下来，这个额外抬高的y值就对应着槽和槽中间的硅板的y方向中心
