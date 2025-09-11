@@ -170,7 +170,7 @@ def select_E_component_by_range_from_dataset(
 			import time
 			current_time = time.strftime("%m%d-%H%M")
 			fig.savefig(f"{save_path}{current_time}_{component}.png", dpi=300)
-			# print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
+		# print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
 	# for i, e in enumerate(energy_all):
 	# 	print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
 
@@ -317,17 +317,18 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 		# save_path=os.path.join(save_path,"record-2")
 		if save_flag:
 			output_area_code_2, energy_list_2 = lupy.get_simple_out(selected_range=out_y_metric_total_2,
-																power_name=power_name,
-																z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
-																plot_energy_flag=plot_energy_flag, save_path=save_path)
+																	power_name=power_name,
+																	z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+																	plot_energy_flag=plot_energy_flag,
+																	save_path=save_path)
 		else:
 			output_area_code_2, energy_list_2 = lupy.get_simple_out(selected_range=out_y_metric_total_2,
-																power_name=power_name,
-																z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
-																plot_energy_flag=plot_energy_flag,
-																save_path=False)  # 我知道这里逻辑很古怪，先这样吧
+																	power_name=power_name,
+																	z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+																	plot_energy_flag=plot_energy_flag,
+																	save_path=False)  # 我知道这里逻辑很古怪，先这样吧
 		output_energy_ls_2 = [round(float(x), 4) for x in energy_list_2]
-		return output_area_code, output_energy_ls,output_area_code_2, output_energy_ls_2
+		return output_area_code, output_energy_ls, output_area_code_2, output_energy_ls_2
 	else:
 		return output_area_code, output_energy_ls
 
