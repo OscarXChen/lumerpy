@@ -26,19 +26,21 @@ def select_E_component_by_range_from_dataset(
 		plot_Ey_flag=False, Energyshow=True, selected_range=None, plot_energy_flag=False, save_path=None
 ):
 	# 这里的Energyshow是为了是否计算能量分布，如果Energyshow为False，那么不会有能量分布的计算，也不会正确保存图像结果
+	# 坐标轴与电场分量的名称到索引的映射
 	axis_map = {'x': 0, 'y': 1, 'z': 2}
 	comp_map = {'Ex': 0, 'Ey': 1, 'Ez': 2}
 
+	# 参数检查：axis_name 与 component 必须在上面的映射中
 	if axis_name not in axis_map:
 		raise ValueError("axis_name 必须是 'x', 'y' 或 'z'")
 	if component not in comp_map:
 		raise ValueError("component 必须是 'Ex', 'Ey' 或 'Ez'")
 
-	axis_idx = axis_map[axis_name]
-	comp_idx = comp_map[component]
+	axis_idx = axis_map[axis_name]  # 要做区间筛选的“坐标轴”对应到 E_data 的哪个维度
+	comp_idx = comp_map[component]  # 要选取的电场分量（最后一维的索引）
 
 	coord_values = np.array(Edatas[axis_name])
-	E_data = Edatas["E"]
+	E_data = Edatas["E"]		# 完整的电场数据
 
 	# 如果需要固定 z/x/y
 	fixed_coord_value = None
@@ -47,38 +49,81 @@ def select_E_component_by_range_from_dataset(
 			raise ValueError("fixed_axis_name 必须是 'x', 'y' 或 'z'")
 		fixed_axis_idx = axis_map[fixed_axis_name]
 		fixed_coord_array = np.array(Edatas[fixed_axis_name])
+		# 找到与 fixed_axis_value 最接近的坐标点索引
 		closest_index = np.argmin(np.abs(fixed_coord_array - fixed_axis_value))
 		fixed_coord_value = fixed_coord_array[closest_index]
+
+		# 构造切片列表 slicer，长度 = E_data.ndim（每个维度给一个索引器）
+		# 先全部置为 slice(None) 表示“取该维的所有元素”
 		slicer = [slice(None)] * E_data.ndim
+		# 在固定的轴维度上仅保留 [closest_index : closest_index+1] 这一段（长度为1，维度不丢）
 		slicer[fixed_axis_idx] = slice(closest_index, closest_index + 1)
+		# 应用切片（tuple(...) 是 NumPy 索引约定）
 		E_data = E_data[tuple(slicer)]
+		# 若固定的轴刚好就是我们要做区间筛选的轴，那么相应 coord_values 也只剩下一个坐标点
 		if fixed_axis_name == axis_name:
 			coord_values = fixed_coord_array[closest_index:closest_index + 1]
 
-	# 准备多个区域的结果
+	# 用于收集每个区间的结果（支持多区间）
 	E_all, coord_all, energy_all = [], [], []
 
 	# 多区域处理
+	# 构造区间列表：
+	# - 若提供了 selected_range（形如 [[min1,max1], [min2,max2]]），逐个区间处理；
+	# - 否则退化为单一区间 [min_val, max_val]
 	region_list = []
 	if selected_range is not None:
 		region_list = selected_range
 	else:
 		region_list = [[min_val, max_val]]
 
+	# —— 逐区间进行筛选与取分量 ——
 	for r in region_list:
 		r_min, r_max = r
+		# 1) 先用布尔掩码选出坐标落在 [r_min, r_max] 范围内的位置
+		#    mask 的形状与 coord_values 相同（通常是一维），True 表示该索引落在区间内
 		mask = (coord_values >= r_min) & (coord_values <= r_max)
+		# 2) 把 True 的位置拿出来做索引数组（range_indices 是一维整型数组）
 		range_indices = np.where(mask)[0]
+		# 3) 取出这些位置对应的坐标值，作为该区间的坐标数组
 		coord_selected = coord_values[range_indices]
-
+		# 4) 构造对 E_data 的高维切片：
+		#    - 我们要在“筛选轴”（axis_idx）上使用一个“整型索引数组”（range_indices）
+		#    - 在“最后一维”（分量维）上使用“单个整型索引”（comp_idx）取出 Ex/Ey/Ez
+		#
+		# ★ 索引规则要点（NumPy）：
+		#   a) 基本索引（basic indexing）：切片 slice(start, stop, step)、单个 int、... —— 这些不会触发“高级索引”规则；
+		#   b) 高级索引（advanced indexing）：用“整型数组”或“布尔数组”当索引器会触发高级索引；
+		#   c) 当混合使用基本索引与高级索引时：
+		#      - 所有“高级索引的轴”会被提到结果的“前面”，其形状是各高级索引器广播后的形状；
+		#      - 其余采用基本索引的轴，按原顺序跟在后面；
+		#      - 若在某个维度上用的是“单个 int”（属于基本索引），该维会被移除（减少一个维度）。
+		#
+		#   在本例中：
+		#     - 在 axis_idx 维，我们用的是 “整型索引数组 range_indices” → 这是高级索引；
+		#     - 在最后一维（-1），我们用的是 “单个整型 comp_idx” → 这是基本索引，且会移除“分量维”；
+		#     - 其它维度用 slice(None) → 基本索引，维度保留。
+		#
+		#   因为出现了高级索引（range_indices），返回结果的形状会把该高级轴（len(range_indices)）放到最前面，
+		#   然后拼上其余保留下来的各轴（不含被 int 取走的最后一维）。
 		# 选出电场分量
 		slicer = [slice(None)] * E_data.ndim
+		# 在“筛选轴”上放入“整型索引数组”（高级索引），只取区间内的那几层
 		slicer[axis_idx] = range_indices
+		# 在“最后一维”（分量维）上放入“单个整型”（基本索引），从而只取一个分量（该维度被移除）
 		slicer[-1] = comp_idx
+
+		# 实际取数：
+		# E_selected 的形状规则（举例）：若 E_data 原形状是 (Nx, Ny, Nz, 3)
+		# - 假设 axis_idx=0（即沿 x 轴筛选，range_indices 长度为 K）
+		# - 则 E_selected 的形状通常为 (K, Ny, Nz) —— 注意 K 这个高级索引维会被“提到最前面”
 		E_selected = E_data[tuple(slicer)]
+		# 为了后续处理方便，去掉长度为 1 的维度（例如前面固定轴但保留了长度为1的维度）
+		# 小提示：np.squeeze 只会移除 size=1 的轴，不会改变轴顺序；若想“固定轴也完全消失”，就靠这里的 squeeze。
 		E_all.append(np.squeeze(E_selected))
 		coord_all.append(coord_selected)
 
+		# 可选的能量计算：对该区间的选中分量做 |E|^2 求和（对所有元素求和，跟轴顺序无关）
 		if Energyshow:
 			energy = np.sum(np.abs(E_selected) ** 2)
 			energy_all.append(energy)
@@ -170,7 +215,7 @@ def select_E_component_by_range_from_dataset(
 			import time
 			current_time = time.strftime("%m%d-%H%M")
 			fig.savefig(f"{save_path}{current_time}_{component}.png", dpi=300)
-		# print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
+	# print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
 	# for i, e in enumerate(energy_all):
 	# 	print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
 
