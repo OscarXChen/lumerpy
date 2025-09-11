@@ -4,15 +4,9 @@ import os
 
 # 用户在这里设置 API 和文件路径
 api_path = r"C:/Program Files/Lumerical/v241/api/python"
-# file_path = r"E:\0_Work_Documents\Simulation\lumerpy\03_cat"
-file_path = r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-plane"
-# file_name = r"m01_wg.fsp"
-file_name = r"m1.10_gaussian.fsp"
-# file_name = r"m00_temp.fsp"
+file_path = r"E:\0_Work_Documents\Simulation\lumerpy\03_cat"
+file_name = r"m00_temp.fsp"
 
-
-file_path=r"E:\0_Work_Documents\Simulation\lumerpy\01_equal-plane\records"
-file_name=r"m1.4_gaussian_20250114_16-51-26.fsp"
 sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
 import lumerpy as lupy
 

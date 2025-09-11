@@ -170,7 +170,7 @@ def select_E_component_by_range_from_dataset(
 			import time
 			current_time = time.strftime("%m%d-%H%M")
 			fig.savefig(f"{save_path}{current_time}_{component}.png", dpi=300)
-			print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
+			# print(f"✅ 所有能量图已保存至 {save_path}_{component}.png")
 	# for i, e in enumerate(energy_all):
 	# 	print(f"区域 {i} 累计 {component}² 能量为: {e:.4e}")
 
@@ -214,7 +214,8 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
 						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True,
-						   save_flag=False, show_area_flag=True, effective_y_span_flag=False):
+						   save_flag=False, show_area_flag=True, effective_y_span_flag=False,
+						   double_output_record_flag=False):
 	'''
 	返回输出的区域编码和能量；
 	此外，save_flag若为True，则将能量图保存到save_path
@@ -291,7 +292,44 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 			print(f"区域 {i} 范围：{area_start * 1e6:.2f},\t{area_end * 1e6:.2f}")
 		# print(f"可能输出区域为：{out_y_metric_total}")
 		print(f"输出区域是：区域 {output_area_code}，并且各区域输出值为：{output_energy_ls}")
-	return output_area_code, output_energy_ls
+
+	# 多存一次关于之前的输出区域的记录
+	if double_output_record_flag:
+		extra_gap_y = (period - width) / 2  # 额外抬高半个槽和槽之间的间距
+		extra_gap_y = extra_gap_y + width  # 场发射位置本来就在槽和槽中间，这两行代码下来，这个额外抬高的y值就对应着槽和槽中间的硅板的y方向中心
+		# extra_gap_y = 0  # 新的设计思路转变为，不在输入和输出处讨论应当抬高多少位置，转变为在设置metaline的时候抬高多少位置
+		out_y_metric_center_ls_2 = []
+		starts_ls = []
+		out_y_metric_start_ls_2 = []
+		out_y_metric_total_2 = np.zeros((channals_output, 2))
+		out_y_span = out_y_pixel_span * scale_ratio
+		for i in range(channals_output):  # 对每个输入/出通道操作
+			# out_y_metric_center_ls.append(out_y_pixel_center_ls[i] * scale_ratio + extra_gap_y)		# 这里应该有点问题，涉及到extra_gap_y，先不管他
+			out_y_metric_start_ls_2.append(out_y_pixel_start_ls[i] * scale_ratio + extra_gap_y)
+			out_y_metric_total_2[i, :] = out_y_metric_start_ls_2[i], out_y_metric_start_ls_2[i] + out_y_span
+		# print(f"输出位置[{i}]：{out_y_metric_start_ls[i]},{out_y_metric_start_ls[i] + out_y_span}")
+		# print(out_y_metric_total)
+		# 选择好输出范围即可
+		# selected_ranges = np.array([
+		# 	[0e-6, 6e-6],
+		# 	[12e-6, 18e-6]
+		# ])
+		# save_path=os.path.join(save_path,"record-2")
+		if save_flag:
+			output_area_code_2, energy_list_2 = lupy.get_simple_out(selected_range=out_y_metric_total_2,
+																power_name=power_name,
+																z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+																plot_energy_flag=plot_energy_flag, save_path=save_path)
+		else:
+			output_area_code_2, energy_list_2 = lupy.get_simple_out(selected_range=out_y_metric_total_2,
+																power_name=power_name,
+																z_fixed=z_fixed, plot_Ey_flag=plot_Ey_flag,
+																plot_energy_flag=plot_energy_flag,
+																save_path=False)  # 我知道这里逻辑很古怪，先这样吧
+		output_energy_ls_2 = [round(float(x), 4) for x in energy_list_2]
+		return output_area_code, output_energy_ls,output_area_code_2, output_energy_ls_2
+	else:
+		return output_area_code, output_energy_ls
 
 
 def read_unique_csv(path, delimiter=",", dtype=float, has_header=True):
