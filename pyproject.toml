@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lumerpy"
-version = "1.4.0"
+version = "1.4.1"
 description = "A Python package that provides a secondary wrapper for the official Python API of the optical simulation software Lumerical, enabling easier usage in more complex scenarios."
 authors = ["OscarxChen <oscarxchen@outlook.com>"]
 readme = "README.md"
