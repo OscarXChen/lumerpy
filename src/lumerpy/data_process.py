@@ -420,19 +420,20 @@ def save_csv_results(save_path, save_name, int_to_record, list_to_append="", sav
 	return file_csv_path
 
 
-def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_flag=False):
+def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_flag=False,each_pix=3):
+
 	data_count, data_raw = read_unique_csv(path_data)
 
 	data_y = data_raw[:, 0]
 	data_X = data_raw[:, 1:]
 
-	data_X_decode = np.apply_along_axis(recover_original, axis=1, arr=data_X)
+	data_X_decode = np.apply_along_axis(recover_original, axis=1, arr=data_X,repeat=each_pix)
 	# print(f"展示前16条经过译码的输入数据为：\n{data_X_decode[0:16]}")
 	pd_count, pd_raw = read_unique_csv(path_pd)
 
 	pd_overview = pd_raw[0]
 	pd_pds = pd_raw[1:]
-	pd_decode = np.apply_along_axis(recover_original, axis=1, arr=pd_pds)
+	pd_decode = np.apply_along_axis(recover_original, axis=1, arr=pd_pds,repeat=each_pix)
 
 	channels_in = len(data_X_decode[0])
 	channels_out = len(pd_decode)
