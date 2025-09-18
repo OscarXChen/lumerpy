@@ -260,7 +260,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
 						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True,
 						   save_flag=False, show_area_flag=True, effective_y_span_flag=False,
-						   double_output_record_flag=False):
+						   double_output_record_flag=False,effective_y_span=0):
 	'''
 	返回输出的区域编码和能量；
 	此外，save_flag若为True，则将能量图保存到save_path
@@ -295,7 +295,8 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 		duty_cycle=duty_cycle,
 		margins_cycle=margins_cycle)
 	if effective_y_span_flag:
-		fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧
+		# fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧
+		fdtd_y_span=effective_y_span
 	else:
 		fdtd_y_span = FD.getnamed("FDTD", "y span")  # 这里要改一下，不应该通过FDTD的区域范围获取有效宽度，这部分工作挺麻烦的
 

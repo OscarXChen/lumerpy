@@ -42,6 +42,8 @@ from .tools import u_print
 
 from .console import console
 
+from .initialize import initialize
+
 from .data_process import *
 def help():
 	hello()
