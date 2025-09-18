@@ -40,7 +40,7 @@ def select_E_component_by_range_from_dataset(
 	comp_idx = comp_map[component]  # 要选取的电场分量（最后一维的索引）
 
 	coord_values = np.array(Edatas[axis_name])
-	E_data = Edatas["E"]		# 完整的电场数据
+	E_data = Edatas["E"]  # 完整的电场数据
 
 	# 如果需要固定 z/x/y
 	fixed_coord_value = None
@@ -260,7 +260,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
 						   file_name=r"m00_temp.fsp", save_path=False, plot_Ey_flag=True, plot_energy_flag=True,
 						   save_flag=False, show_area_flag=True, effective_y_span_flag=False,
-						   double_output_record_flag=False,effective_y_span=0):
+						   double_output_record_flag=False, effective_y_span=0):
 	'''
 	返回输出的区域编码和能量；
 	此外，save_flag若为True，则将能量图保存到save_path
@@ -268,18 +268,20 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 	import sys
 	import os
 
-	# 用户在这里设置 API 和文件路径
-	api_path = r"C:/Program Files/Lumerical/v241/api/python"
-	sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
+	# # 用户在这里设置 API 和文件路径
+	# api_path = r"C:/Program Files/Lumerical/v241/api/python"
+	# sys.path.append(os.path.normpath(api_path))  # 添加 API 路径以确保可以成功导入 lumapi
+	# import lumerpy as lupy
+	# lupy.tools.check_path_and_file(file_path=file_path, file_name=file_name, auto_newfile=False)
+	# # import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
+	# lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
+	#
+	# # --------------------基本设置结束--------------------
+	# fdtd_instance = lupy.get_fdtd_instance(hide=True, solution_type="FDTD")  # 创建fdtd实例，这应该是第一个实例，hide=True时，隐藏窗口
+	# # lupy.version()  # 测试一下是否成功
+	# FD = lupy.get_existing_fdtd_instance()  # 返回创建的实例，以便使用lumapi
 	import lumerpy as lupy
-	lupy.tools.check_path_and_file(file_path=file_path, file_name=file_name, auto_newfile=False)
-	# import lumapi		# lupy库中已经包含了lumapi的导入，不需要额外导入lumapi
-	lupy.setup_paths(api_path, file_path, file_name)  # 设置路径到库
-
-	# --------------------基本设置结束--------------------
-	fdtd_instance = lupy.get_fdtd_instance(hide=True, solution_type="FDTD")  # 创建fdtd实例，这应该是第一个实例，hide=True时，隐藏窗口
-	# lupy.version()  # 测试一下是否成功
-	FD = lupy.get_existing_fdtd_instance()  # 返回创建的实例，以便使用lumapi
+	FD = lupy.initialize(file_path=file_path,file_name=file_name)
 	if not FD:
 		print("未正确创建实例，请检查")
 	u = 1e-6
@@ -296,7 +298,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 		margins_cycle=margins_cycle)
 	if effective_y_span_flag:
 		# fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧
-		fdtd_y_span=effective_y_span
+		fdtd_y_span = effective_y_span
 	else:
 		fdtd_y_span = FD.getnamed("FDTD", "y span")  # 这里要改一下，不应该通过FDTD的区域范围获取有效宽度，这部分工作挺麻烦的
 
@@ -421,20 +423,19 @@ def save_csv_results(save_path, save_name, int_to_record, list_to_append="", sav
 	return file_csv_path
 
 
-def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_flag=False,each_pix=3):
-
+def get_channels_in_out(path_data, path_pd, show_flag=False, return_data_decode_flag=False, each_pix=3):
 	data_count, data_raw = read_unique_csv(path_data)
 
 	data_y = data_raw[:, 0]
 	data_X = data_raw[:, 1:]
 
-	data_X_decode = np.apply_along_axis(recover_original, axis=1, arr=data_X,repeat=each_pix)
+	data_X_decode = np.apply_along_axis(recover_original, axis=1, arr=data_X, repeat=each_pix)
 	# print(f"展示前16条经过译码的输入数据为：\n{data_X_decode[0:16]}")
 	pd_count, pd_raw = read_unique_csv(path_pd)
 
 	pd_overview = pd_raw[0]
 	pd_pds = pd_raw[1:]
-	pd_decode = np.apply_along_axis(recover_original, axis=1, arr=pd_pds,repeat=each_pix)
+	pd_decode = np.apply_along_axis(recover_original, axis=1, arr=pd_pds, repeat=each_pix)
 
 	channels_in = len(data_X_decode[0])
 	channels_out = len(pd_decode)
