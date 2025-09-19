@@ -254,7 +254,7 @@ def get_simple_out(selected_range, power_name="local_outputs", z_fixed=0.11e-6,
 # 	# 我现在希望：
 # 	# 选取所有x在我指定的范围（例如：index=[3,5]）中的Ey数据，如何做？
 
-def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, margins_cycle=(0, 0, 0, 0),
+def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle_output=0.5, margins_cycle=(0, 0, 0, 0),
 						   power_name="local_outputs",
 						   period=0.5e-6, width=0.2e-6, z_fixed=0.11e-6,
 						   file_path=r"E:\0_Work_Documents\Simulation\lumerpy\03_cat",
@@ -282,6 +282,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 	# FD = lupy.get_existing_fdtd_instance()  # 返回创建的实例，以便使用lumapi
 	import lumerpy as lupy
 	FD = lupy.initialize(file_path=file_path,file_name=file_name)
+	# FD = lupy.get_existing_fdtd_instance()  # 旧的写法，关于实例继承的问题我没搞清楚，凑合着用吧
 	if not FD:
 		print("未正确创建实例，请检查")
 	u = 1e-6
@@ -294,7 +295,7 @@ def get_simulation_results(size=(1, 50), channals_output=2, duty_cycle=0.5, marg
 	out_y_pixel_center_ls, out_y_pixel_start_ls, out_y_pixel_span, _ = lupy.tools.get_single_inputs_center_x(
 		channels=channals_output,
 		data_single_scale=size,
-		duty_cycle=duty_cycle,
+		duty_cycle=duty_cycle_output,
 		margins_cycle=margins_cycle)
 	if effective_y_span_flag:
 		# fdtd_y_span = FD.getnamed("effective_y_span", "y min")  # 通过仿真对象直接传递/px，先这样吧

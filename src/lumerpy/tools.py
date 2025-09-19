@@ -165,7 +165,7 @@ def check_path_and_file(file_path, file_name, auto_newfile=True, template_file=N
 
 def get_single_inputs_center_x(
 		channels=2, data_single_scale=(1, 10), margins_cycle=(0.1, 0.1, 0.1, 0.1),
-		duty_cycle=0.6, shift_flag=False):
+		duty_cycle=0.5, shift_flag=False):
 	"""返回各输入通道的中心像素值，开始像素值，通道宽度"""
 	data_single_h, data_single_w = data_single_scale
 	top_rate, bottom_rate, left_rate, right_rate = margins_cycle
