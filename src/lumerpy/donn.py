@@ -381,7 +381,6 @@ def eff_get_and_cal(group_num=5, eff_direction="Ey", length=1 * u, distance=3 * 
 # 		length_ls.append(L)
 # 	return length_ls
 def phase_to_length(phase_ls, n_eff, n_slab, wave_length=1.55e-6):
-	import numpy as np
 	phase_ls = np.array(phase_ls)  # 确保输入是 NumPy 数组
 	# 对每个元素做条件判断：若小于0则保留，否则减去2π
 	phase_ls_negative = np.where(phase_ls < 0, phase_ls, phase_ls - 2 * np.pi)
