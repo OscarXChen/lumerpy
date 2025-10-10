@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import random
-import diffrann_plots as plots
-import diffrann_logic_func as logic_func
+import lumerpy.diffrann_plots as plots
+import lumerpy.diffrann_logic_func as logic_func
 
 def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, channels,
 							margins_cycle, duty_cycle, random_mode=False,
