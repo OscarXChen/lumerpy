@@ -4,9 +4,11 @@ import random
 import lumerpy.diffrann_plots as plots
 import lumerpy.diffrann_logic_func as logic_func
 
+
 def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, channels,
 							margins_cycle, duty_cycle, random_mode=False,
-							gaussian=False, mu=0.0, sigma=1.0, true_table_flag=False, bit_expand_flag=False):
+							gaussian=False, mu=0.0, sigma=1.0, true_table_flag=False, bit_expand_flag=False,
+							source_fit_path=None):
 	"""
 	生成逻辑运算的图像数据集 (类似“MNIST”风格)，每个样本包含:
 	  - 若干“通道”对应的二进制输入(0或1)，写进相应像素区域
@@ -51,7 +53,7 @@ def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, chan
 			inputs_pool.append(bits)
 		return np.array(inputs_pool, dtype=np.int32)
 
-	def pixel_write(value, pixel_scale, gaussian=False, mu=0.0, sigma=1.0,fit_value=None):
+	def pixel_write(value, pixel_scale, gaussian=False, mu=0.0, sigma=1.0, fit_value=None):
 		"""
 		根据输入 value 决定如何填充一个二维像素块 (pixel_scale = (pixel_scale_h, pixel_scale_w))
 		- 若 value=0: 全 0
@@ -75,7 +77,7 @@ def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, chan
 			if not gaussian:
 				# 全 1
 				return value * np.ones((pixel_scale_h, pixel_scale_w), dtype=np.float32)
-			elif gaussian=="fit":
+			elif gaussian == "fit":
 				# 2D 高斯分布 (中心最大=1, 边缘尽量接近 0)
 				# 以像素中心 ( (pixel_scale_h-1)/2, (pixel_scale_w-1)/2 ) 作为高斯分布的中心
 				# y = np.arange(pixel_scale_h).reshape(-1, 1)
@@ -88,7 +90,7 @@ def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, chan
 				# 经典 2D 高斯: exp( - (r^2) / (2*sigma^2) )
 				# 这里把 mu 可以当做中心点(也可以忽略,直接默认中心), 简化:
 				# gauss = np.exp(-dist_sq / (2.0 * sigma * sigma)) * value  # 这一步乘以value，应该可以实现根据写入值变化
-				gauss=fit_value
+				gauss = fit_value
 				return gauss.astype(np.float32)
 			else:
 				# 2D 高斯分布 (中心最大=1, 边缘尽量接近 0)
@@ -136,7 +138,7 @@ def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, chan
 			margin_T=0, margin_B=0, margin_L=0, margin_R=0,
 			channels=4,
 			random_mode=False,
-			gaussian=False, mu=0.0, sigma=1.0, true_table_flag=False, bit_expand_flag=True):
+			gaussian=False, mu=0.0, sigma=1.0, true_table_flag=False, bit_expand_flag=True, source_fit_path=None):
 		"""
 		生成整个数据集 (data_set_X, data_set_Y)
 
@@ -198,7 +200,7 @@ def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, chan
 
 		idx = 0  # 用于遍历模式
 		if gaussian == "fit":
-			fit_value = fit_from_source_file(shape=(pixel_scale_h, pixel_scale_w))
+			fit_value = fit_from_source_file(shape=(pixel_scale_h, pixel_scale_w), source_path=source_fit_path)
 		else:
 			fit_value = None
 		for i in range(Numbers):
@@ -325,7 +327,8 @@ def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, chan
 		random_mode=random_mode,
 		gaussian=gaussian,
 		mu=mu,
-		sigma=sigma, true_table_flag=true_table_flag, bit_expand_flag=bit_expand_flag
+		sigma=sigma, true_table_flag=true_table_flag, bit_expand_flag=bit_expand_flag,
+		source_fit_path=source_fit_path
 	)
 
 	# if x_logits_bit is None:
@@ -1383,8 +1386,6 @@ def pd_generate(data_single_scale, pd_numbers=2, duty_cycle=0.5, save_flag=True,
 
 
 def get_logic_func(x, channels, true_table_flag=0, Numbers=0):
-
-
 	# 必须强调，这里有一个大坑
 	# 本程序本质上是把逻辑函数的输出看作一个单分类问题，应用二值编码的话，需要多分类，但是我不会
 	# 如果true_table_flag为False，那么，如果输出有3种可能，那么必须使用三位输出，并且真值标签为0或1或2，对应pd阵列的第0或1或2个探测器
@@ -1479,7 +1480,7 @@ def generate_data_total(channels_in=4,  # 需要手动指定
 						logic_function=None,
 						data_single_scale=(0, 0),
 						plot_flag=True,
-						duty_cycle_data=0.5):
+						duty_cycle_data=0.5, source_fit_path=None):
 	'''生成数据，声明较为复杂，请看原函数'''
 	# 生成训练所需数据集
 	# 逻辑函数举例：Y = X + 1
@@ -1528,7 +1529,8 @@ def generate_data_total(channels_in=4,  # 需要手动指定
 		duty_cycle=duty_cycle_data,
 		random_mode=random_mode,  # False => 顺序模式
 		gaussian=gaussian,  # True => 写 1 时用高斯分布
-		mu=0.0, sigma=3.0, true_table_flag=true_table_flag, bit_expand_flag=bit_expand_flag
+		mu=0.0, sigma=3.0, true_table_flag=true_table_flag, bit_expand_flag=bit_expand_flag,
+		source_fit_path=source_fit_path
 	)
 	# 这里注意一下，kaggle代码中，认为data_X.shape=(numbers,28*28)，这里为了方便改成了(numbers,28,28)
 	print("data_X.shape =", data_X.shape)  # (20, 28, 28)
@@ -1567,7 +1569,7 @@ def generate_pd_total(channels_out=8,  # 需要手动指定
 	import diffrann_plots as lupy_plots
 	lupy_plots.plot_initialize(paper_font=True)
 	pd_generate(data_single_scale=data_single_scale, pd_numbers=channels_out, save_flag=save_flag_pd,
-				path_pd=path_pd, plot_flag=plot_flag, duty_cycle=duty_cycle,gaussian_pd=gaussian_pd)
+				path_pd=path_pd, plot_flag=plot_flag, duty_cycle=duty_cycle, gaussian_pd=gaussian_pd)
 	print("PD分布已生成")
 
 
