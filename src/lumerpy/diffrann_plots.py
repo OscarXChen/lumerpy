@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from lumerpy.diffrann_diffrann import predict
 
 
 # def plot_initialize_old(paper_font=False):
@@ -369,7 +370,7 @@ def get_accuracy_and_plot_misclassified(model, x_test, y_test, plot_flag=True, n
 		N: 图像尺寸（默认28x28）
 	"""
 	row, col = size
-	from diffrann_diffrann import predict
+	# from diffrann_diffrann import predict
 	# 1) 获取模型预测结果
 	preds, probs = predict(model, x_test)  # 获取预测类别和 softmax 概率
 	preds = preds.numpy()  # 转换为 NumPy 数组

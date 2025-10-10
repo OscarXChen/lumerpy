@@ -4,8 +4,9 @@ import random
 import lumerpy.diffrann_plots as plots
 import lumerpy.diffrann_logic_func as logic_func
 import lumerpy.diffrann_plots as lupy_plots
-
-
+# diffrann库的依赖真的多，居然还有pip install scikit-learn
+# numpy==1.23.5，tensorflow==2.10
+#
 def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, channels,
 							margins_cycle, duty_cycle, random_mode=False,
 							gaussian=False, mu=0.0, sigma=1.0, true_table_flag=False, bit_expand_flag=False,
