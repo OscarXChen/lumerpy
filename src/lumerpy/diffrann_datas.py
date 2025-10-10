@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import random
-
+import diffrann_plots as plots
+import diffrann_logic_func as logic_func
 
 def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, channels,
 							margins_cycle, duty_cycle, random_mode=False,
@@ -1350,7 +1351,7 @@ def normalize_columns(data):
 def pd_generate(data_single_scale, pd_numbers=2, duty_cycle=0.5, save_flag=True, path_pd=None, plot_flag=True,
 				gaussian_pd=False):
 	# --------------------生成光电探测器分布--------------------
-	import diffrann_plots
+
 	# data_single_scale = (280, 280)
 	data_single_scale = data_single_scale
 	pd_scale = data_single_scale
@@ -1382,7 +1383,7 @@ def pd_generate(data_single_scale, pd_numbers=2, duty_cycle=0.5, save_flag=True,
 
 
 def get_logic_func(x, channels, true_table_flag=0, Numbers=0):
-	import diffrann_logic_func
+
 
 	# 必须强调，这里有一个大坑
 	# 本程序本质上是把逻辑函数的输出看作一个单分类问题，应用二值编码的话，需要多分类，但是我不会
@@ -1482,8 +1483,8 @@ def generate_data_total(channels_in=4,  # 需要手动指定
 	'''生成数据，声明较为复杂，请看原函数'''
 	# 生成训练所需数据集
 	# 逻辑函数举例：Y = X + 1
-	import diffrann_plots
-	import diffrann_logic_func
+	# import diffrann_plots
+	# import diffrann_logic_func
 	plots.plot_initialize(paper_font=True)
 	# --------------------生成数据--------------------
 	# data_single_scale = (28, 28)
