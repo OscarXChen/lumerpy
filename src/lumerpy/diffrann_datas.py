@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import lumerpy.diffrann_plots as plots
 import lumerpy.diffrann_logic_func as logic_func
+import lumerpy.diffrann_plots as lupy_plots
 
 
 def generate_logic_data_set(data_single_scale, Numbers, get_logic_function, channels,
@@ -1566,7 +1567,7 @@ def generate_pd_total(channels_out=8,  # 需要手动指定
 	'''生成pd，声明较为复杂，请看原函数'''
 	# 生成训练所需数据集
 	# 逻辑函数举例：Y = X + 1
-	import diffrann_plots as lupy_plots
+	# import diffrann_plots as lupy_plots
 	lupy_plots.plot_initialize(paper_font=True)
 	pd_generate(data_single_scale=data_single_scale, pd_numbers=channels_out, save_flag=save_flag_pd,
 				path_pd=path_pd, plot_flag=plot_flag, duty_cycle=duty_cycle, gaussian_pd=gaussian_pd)
